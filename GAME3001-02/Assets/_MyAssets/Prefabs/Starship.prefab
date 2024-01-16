@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6580887675407599656}
   - component: {fileID: 8770578249153991429}
   m_Layer: 0
-  m_Name: Starship Parent
+  m_Name: Starship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 4831582888393251683}
   - component: {fileID: 4412995465212724786}
   m_Layer: 0
-  m_Name: reliant
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
