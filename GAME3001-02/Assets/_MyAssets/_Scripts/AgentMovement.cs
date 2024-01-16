@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 public class AgentMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
-    [SerializeField] private Transform island;
-    [SerializeField] private float loadDistance;
     private Vector3 targetPosition = Vector3.zero;
 
     void Update()
@@ -26,13 +24,6 @@ public class AgentMovement : MonoBehaviour
 
         // Rotate to look at the target position.
         LookAt2D(targetPosition);
-
-        // Check island distance.
-        if (Vector3.Distance(transform.position, island.position) < loadDistance)
-        {
-            Debug.Log("Loading end scene...");
-            SceneManager.LoadScene(2);
-        }
     }
 
     void LookAt2D(Vector3 target)
