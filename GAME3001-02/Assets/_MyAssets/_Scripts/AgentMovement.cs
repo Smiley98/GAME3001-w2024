@@ -7,6 +7,7 @@ public class AgentMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     private Vector3 targetPosition = Vector3.zero;
+    Rigidbody2D rb;
 
     void Start()
     {
@@ -21,6 +22,8 @@ public class AgentMovement : MonoBehaviour
         Debug.Log(N2);  // Manual normalization
         Debug.Log(length1);
         Debug.Log(length2);
+
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -33,12 +36,21 @@ public class AgentMovement : MonoBehaviour
             targetPosition.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
         }
 
+        Vector3 direction = (targetPosition - transform.position).normalized;
+
         // Move towards the target position.
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        //transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
 
         // Manual implementation of the above
         //float translation = Mathf.Min(moveSpeed * Time.deltaTime, (targetPosition - transform.position).magnitude);
         //transform.position += (targetPosition - transform.position).normalized * translation;
+
+        // Homework: change this to a generic Seek function.
+        // You should supply two GameObjects -- a seeker, and a target
+        // The seeker must contain a rigidbody, and a maximum speed. All the target needs is a position.
+        Vector2 currentVelocity = rb.velocity;
+        Vector2 desiredVelocity = direction * moveSpeed;
+        rb.AddForce(desiredVelocity - currentVelocity);
 
         // Rotate to look at the target position.
         LookAt2D(targetPosition);
