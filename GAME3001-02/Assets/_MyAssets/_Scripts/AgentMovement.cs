@@ -48,7 +48,6 @@ public class AgentMovement : MonoBehaviour
     {
         Vector3 lookDirection = target - transform.position;
         float angle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.Euler(0.0f, 0.0f, angle);
     }
 }
-
