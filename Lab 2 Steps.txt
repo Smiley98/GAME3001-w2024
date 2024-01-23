@@ -1,0 +1,76 @@
+Lab 2
+
+- Note on Unity version
+	- Since we're deleting the Library each time we submit or push to github, the actual Unity version shouldn't matter so long as the students use a 2022 version. I believe some labs have 2022.1.21, and I use 2022.3.14. But I have no problems rebuilding the libraries
+
+- Intro
+	- This lab is broken up into two parts, done over two weeks
+	- There isn't TOO much to this lab, but it gives the lab instructors some time to explain the code
+	- The goal of Lab 2 is to create the initial Seek behaviour that you'll need for the agent for Assignment 1
+		- For A1, students will also have to add Flee, Arrive and Obstacle Avoidance
+		- However, you can make any additions or alterations you want from the C++/SDL assignment
+	- I have created two Seeks: one is a basic non-orienting Seek and the second is one I like much better and it links the orientation to the direction of motion - so the agent rotates towards the target but always moves forward
+
+- Starting Lab
+	- Make a Lab 2 subfolder in your GAME3001_Labs repo
+	- Go to the Week 2 folder on Brightspace and get the Lab 2 start project and extract it into the Lab 2 folder
+	- Make your first push to GitHub
+	- Explore the couple of GameObjects in the starting scene and spend 30 minutes talking about The Wrath of Khan
+		- No, just kidding! Maybe 5-10 minutes will be fine. Hey, the students need some context, right
+
+- Adding GameObjects
+	- In the Prefabs folder, there are prefabs for the target called planet, and the Starship Parent (our agent)
+		- The target is a planet, not the Enterprise, but that epic battle will be coming in a future lab!
+	- Add both prefabs to the scene, putting the ship at the bottom left and the target in the top right
+	- There should only be Rigidbody2Ds and colliders on the objects
+	- Note that for the starship, the sprite is actually in the child object
+	- Push changes
+
+- Adding the click and drag functionality (ClickDragScript)
+	- I have decided that an interesting feature would be to have the user be able to click and drag the GameObjects around instead of moving them with sliders or buttons
+	- Much of this lab might be taken up by creating the script and its functionality
+	- Create the ClickDragScript with the students and add the code in the completed script
+	- Attach the script to the Canvas for convenience and test it by clicking and dragging the two objects around
+	- Push changes
+
+- Creating the AgentObject base script
+	- The starship parent is going to have a script called Starship eventually that will inherit from AgentObject
+	- Create the AgentObject script, explaining how any autonomous agent will have a Target
+	- I opted to use a property called TargetPosition to review properties with students
+	- It gets and sets the .position of the target Transform
+	- Push changes
+
+- If there's time left, you can do the "Starting the Starship script" from Part 2 here
+
+- No submission for Part 1
+	- Note that to simplify things, you can wait until Part 2 is done before asking students to submit the entire Lab 2
+
+Lab 2 - Part 2
+
+- Starting Lab
+	- Have the students continue their lab from last week. If they don't have a Part 1, they'll have to watch any video that was made. If they don't attend the labs, it's their fault
+
+- Starting the Starship script 
+	- Create a new C# script called Starship and put it on the ship parent. Make sure it derives from AgentObject
+	- Create the smaller Seek, adding the necessary fields - I think movementSpeed is the only one
+	- Make sure to add the Start and Update behaviours and in Update, invoke Seek
+	- You may spend any remaining time explaining the code and demoing the Seek
+	- Push changes
+
+- Continuing the Starship script
+	- Part 2 may not take the entire 2 hours, now that I think about it, but you'll have plenty of time to play around with the new Seek, tweaking the different speeds.
+	- Add the new SeekForward method, and add any required fields
+	- I imagine some time will be needed to explain this method
+	- Add the OnTriggerEnter2D method, and make sure to set a new tag on the target GameObject called Target
+
+- For students to add
+	- For 2% of 8 for the lab, students must add a button that restarts the Seek behaviour
+	- It should reset the positions of the ship and target
+	- It will mostly be up to them how to figure this out, but you can give hints as required
+
+- Check the Lab Report for Lab 2. Students just have to highlight what level they managed to complete for each item and hand it in with their Lab 2.
+
+
+
+
+
