@@ -383,6 +383,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &529475434 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2803132891186600804, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
+  m_PrefabInstance: {fileID: 1767065630}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &600459650
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,7 +520,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d6e12f2ddb77a64ab6e9f9dcae8de36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 15
+  obstacle: {fileID: 529475434}
+  moveSpeed: 5
+  raySpread: 5
 --- !u!61 &814840739
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -614,11 +621,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2803132891186600804, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.29
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2803132891186600804, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2803132891186600804, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
       propertyPath: m_LocalPosition.z

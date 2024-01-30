@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class AgentMovement : MonoBehaviour
 {
-    public Transform target;
+    // Planet is the obstacle, target is our cursor
+    Vector3 target = Vector3.zero;
+    public Transform obstacle;
     public float moveSpeed;
     Rigidbody2D rb;
 
@@ -31,47 +33,43 @@ public class AgentMovement : MonoBehaviour
     void Update()
     {
         // Change this to drag our planet around
-        //if (Input.GetMouseButton(0))
-        //{
-        //    // Convert mouse position to world position.
-        //    targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    targetPosition.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
-        //}
+        if (Input.GetMouseButton(0))
+        {
+            // Convert mouse position to world position.
+            target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            target.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
+        }
 
         // Direction FROM ship TO target
-        Vector3 direction = (target.position - transform.position).normalized;
-
-        // Move towards the target position.
-        //transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
-
-        // Manual implementation of the above
-        //float translation = Mathf.Min(moveSpeed * Time.deltaTime, (targetPosition - transform.position).magnitude);
-        //transform.position += (targetPosition - transform.position).normalized * translation;
-
-        // Homework: change this to a generic Seek function.
-        // You should supply two GameObjects -- a seeker, and a target
-        // The seeker must contain a rigidbody, and a maximum speed. All the target needs is a position.
         Vector2 currentVelocity = rb.velocity;
-        Vector2 desiredVelocity = direction * moveSpeed;
-        //rb.AddForce(desiredVelocity - currentVelocity);
-
-        // Rotate to look at the target position.
-        LookAt2D(target.position);
+        Vector2 desiredVelocity = (target - transform.position).normalized * moveSpeed;
 
         // transform.right is the ship's direction
         Vector3 leftDirection = Quaternion.Euler(0.0f, 0.0f, raySpread) * transform.right;
         Vector3 rightDirection = Quaternion.Euler(0.0f, 0.0f, -raySpread) * transform.right;
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.right, transform.right);
-        if (hit.collider != null)
+        RaycastHit2D leftHit = Physics2D.Raycast(transform.position + leftDirection, leftDirection);
+        RaycastHit2D rightHit = Physics2D.Raycast(transform.position + rightDirection, rightDirection);
+
+        if (leftHit.collider != null)
         {
-            Debug.Log("Ship raycast hit: " + hit.collider.gameObject.name);
+            // Turn right (transform.up * -1) to avoid left obstacle
+            desiredVelocity += new Vector2(transform.up.x, transform.up.y) * moveSpeed * -1.0f;
+            //Debug.Log(leftHit.collider.gameObject.name);
+        }
+        else if (rightHit.collider != null)
+        {
+            // Turn left (transform.up) to avoid right obstacle
+            desiredVelocity += new Vector2(transform.up.x, transform.up.y) * moveSpeed;
+            //Debug.Log(rightHit.collider.gameObject.name);
         }
 
-        // No longer using the centre ray
-        //Debug.DrawLine(transform.position, transform.position + transform.right * 20.0f);
         Debug.DrawLine(transform.position, transform.position + leftDirection * 20.0f);
         Debug.DrawLine(transform.position, transform.position + rightDirection * 20.0f);
+
+        // Prolong our rotation until we've applied avoidance force!
+        LookAt2D(target);
+        rb.AddForce(desiredVelocity - currentVelocity);
     }
 
     void LookAt2D(Vector3 target)
