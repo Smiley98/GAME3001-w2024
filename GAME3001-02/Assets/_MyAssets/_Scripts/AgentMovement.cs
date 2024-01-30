@@ -36,6 +36,7 @@ public class AgentMovement : MonoBehaviour
             targetPosition.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
         }
 
+        // Direction FROM ship TO target
         Vector3 direction = (targetPosition - transform.position).normalized;
 
         // Move towards the target position.
@@ -50,10 +51,19 @@ public class AgentMovement : MonoBehaviour
         // The seeker must contain a rigidbody, and a maximum speed. All the target needs is a position.
         Vector2 currentVelocity = rb.velocity;
         Vector2 desiredVelocity = direction * moveSpeed;
-        rb.AddForce(desiredVelocity - currentVelocity);
+        //rb.AddForce(desiredVelocity - currentVelocity);
 
         // Rotate to look at the target position.
         LookAt2D(targetPosition);
+
+        // transform.right is the ship's direction
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.right, transform.right);
+        if (hit.collider != null)
+        {
+            Debug.Log("Ship raycast hit: " + hit.collider.gameObject.name);
+        }
+
+        Debug.DrawLine(transform.position, transform.position + transform.right * 20.0f);
     }
 
     void LookAt2D(Vector3 target)

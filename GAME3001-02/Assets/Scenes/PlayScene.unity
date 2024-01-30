@@ -498,7 +498,7 @@ GameObject:
   - component: {fileID: 814840738}
   m_Layer: 0
   m_Name: Starship
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -655,6 +655,10 @@ PrefabInstance:
     - target: {fileID: 8171493362612185699, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
       propertyPath: m_Name
       value: planet
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171493362612185699, guid: b0f7a8732335dbb429cd4c26c4aa261b, type: 3}
+      propertyPath: m_TagString
+      value: Target
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -829,6 +833,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3275328437032952400, guid: 24fe13f212ff35d4da5de9817b95fadb, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 4412995465212724786, guid: 24fe13f212ff35d4da5de9817b95fadb, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -887,6 +895,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7001827523004621720, guid: 24fe13f212ff35d4da5de9817b95fadb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8770578249153991429, guid: 24fe13f212ff35d4da5de9817b95fadb, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8770578249153991429, guid: 24fe13f212ff35d4da5de9817b95fadb, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
