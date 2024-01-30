@@ -5,9 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class AgentMovement : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
-    private Vector3 targetPosition = Vector3.zero;
+    public Transform target;
+    public float moveSpeed;
     Rigidbody2D rb;
+
+    public float raySpread;
 
     void Start()
     {
@@ -28,16 +30,16 @@ public class AgentMovement : MonoBehaviour
 
     void Update()
     {
-        // Check for mouse input.
-        if (Input.GetMouseButton(0))
-        {
-            // Convert mouse position to world position.
-            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            targetPosition.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
-        }
+        // Change this to drag our planet around
+        //if (Input.GetMouseButton(0))
+        //{
+        //    // Convert mouse position to world position.
+        //    targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    targetPosition.z = 0.0f; // Ensure the Z-coordinate is correct for a 2D game  .     
+        //}
 
         // Direction FROM ship TO target
-        Vector3 direction = (targetPosition - transform.position).normalized;
+        Vector3 direction = (target.position - transform.position).normalized;
 
         // Move towards the target position.
         //transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
@@ -54,16 +56,22 @@ public class AgentMovement : MonoBehaviour
         //rb.AddForce(desiredVelocity - currentVelocity);
 
         // Rotate to look at the target position.
-        LookAt2D(targetPosition);
+        LookAt2D(target.position);
 
         // transform.right is the ship's direction
+        Vector3 leftDirection = Quaternion.Euler(0.0f, 0.0f, raySpread) * transform.right;
+        Vector3 rightDirection = Quaternion.Euler(0.0f, 0.0f, -raySpread) * transform.right;
+
         RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.right, transform.right);
         if (hit.collider != null)
         {
             Debug.Log("Ship raycast hit: " + hit.collider.gameObject.name);
         }
 
-        Debug.DrawLine(transform.position, transform.position + transform.right * 20.0f);
+        // No longer using the centre ray
+        //Debug.DrawLine(transform.position, transform.position + transform.right * 20.0f);
+        Debug.DrawLine(transform.position, transform.position + leftDirection * 20.0f);
+        Debug.DrawLine(transform.position, transform.position + rightDirection * 20.0f);
     }
 
     void LookAt2D(Vector3 target)
