@@ -2,12 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TileType : int
+{
+    GRASS,
+    WATER,
+    MUD,
+    STONE
+}
+
 public class Grid : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
     List<List<GameObject>> grid = new List<List<GameObject>>();
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
+
+    int[,] tiles =
+    {
+        { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
+    };
 
     void Start()
     {
@@ -41,13 +63,31 @@ public class Grid : MonoBehaviour
         {
             for (int col = 0; col < colCount; col++)
             {
+                //Vector2 position = tile.transform.position;
+                //position = new Vector2(position.x / colCount, position.y / rowCount);
+                //tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
                 GameObject tile = grid[row][col];
-                Vector2 position = tile.transform.position;
+                TileType type = (TileType)tiles[row, col];
+                Color color = Color.white;
+                switch (type)
+                {
+                    case TileType.GRASS:
+                        color = Color.green;
+                        break;
 
-                // We know colors are represented as RGBA values between 0 and 1
-                // Hence, we can convert our positions to the range [0, 1] to render them as colours!
-                position = new Vector2(position.x / colCount, position.y / rowCount);
-                tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
+                    case TileType.WATER:
+                        color = Color.blue;
+                        break;
+
+                    case TileType.MUD:
+                        color = Color.red;
+                        break;
+                       
+                    case TileType.STONE:
+                        color = Color.grey;
+                        break;
+                }
+                tile.GetComponent<SpriteRenderer>().color = color;
             }
         }
 
