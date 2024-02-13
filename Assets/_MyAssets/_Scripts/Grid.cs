@@ -50,17 +50,23 @@ public class Grid : MonoBehaviour
                 tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
             }
         }
+
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int cell = WorldToGrid(mouse);
+        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+    }
+
+    // Quantization
+    Vector2Int WorldToGrid(Vector2 position)
+    {
+        Vector2Int cell = new Vector2Int((int)position.x, (int)position.y);
+        cell.x = Mathf.Clamp(cell.x, 0, colCount - 1);
+        cell.y = Mathf.Clamp(cell.y, 0, rowCount - 1);
+        return cell;
     }
 
     void Update()
     {
         ColorGrid();
-
-        // 1. Convert screen-space to world-space
-        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // 2. Convert world-space to grid-space ("quantization/localization")
-        //Vector2Int cell = 
-        Debug.Log(mouse);
     }
 }
