@@ -12,6 +12,11 @@ public enum TileType : int
     INVALID,
 }
 
+// Homework hints:
+// Associate a terrain cost with each unique tile type ie grass = 10, water = 50, etc
+// Furthermore, the total cost of each tile should be terrain cost + distance score
+// where distance score is the distance from the current tile to the goal tile
+// (you will need to define a goal tile)
 public class Grid : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
