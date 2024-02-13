@@ -8,11 +8,15 @@ public class Grid : MonoBehaviour
     List<List<GameObject>> grid = new List<List<GameObject>>();
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
+    //int tileWidth = 1;
+    //int tileHeight = 1;
 
     void Start()
     {
-        float xStart = -colCount / 2.0f + 0.5f;    // left (-x)
-        float yStart = -rowCount / 2.0f + 0.5f;    // bottom (-y)
+        //float xStart = -colCount / 2.0f + 0.5f;    // left (-x)
+        //float yStart = -rowCount / 2.0f + 0.5f;    // bottom (-y)
+        float xStart = 0.0f + 0.5f;    // left (-x)
+        float yStart = 0.0f + 0.5f;    // bottom (-y)
         float x = xStart;
         float y = yStart;
 
@@ -44,26 +48,40 @@ public class Grid : MonoBehaviour
                 GameObject tile = grid[row][col];
                 Vector2 position = tile.transform.position;
 
-                // We know our grid positions are x = [-10, 10], y = [-5, 5]
-                // We know colors are represented as RGBA values between 0 and 1
-                // Hence, we can convert our positions to the range [0, 1] to render them as colours!
-                position = new Vector2(position.x / 10.0f, position.y / 5.0f);
-                position *= 0.5f;
-                position += new Vector2(0.5f, 0.5f);
+                // Normalize position to render as color
+                position = new Vector2(position.x / 20.0f, position.y / 10.0f);
                 tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
             }
         }
+
+        // World to grid (quantization) test
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int cell = WorldToGrid(mouse);
+        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+
+        // Grid to world (localization) test
+        //GameObject selected = Instantiate(tilePrefab);
+        //selected.transform.position = GridToWorld(cell);
+        //selected.GetComponent<SpriteRenderer>().color = Color.magenta;
+    }
+
+    Vector2Int WorldToGrid(Vector2 position)
+    {
+        Vector2Int cell = new Vector2Int((int)position.x, (int)position.y);
+        cell.x = Mathf.Clamp(cell.x, 0, colCount - 1);
+        cell.y = Mathf.Clamp(cell.y, 0, rowCount - 1);
+        return cell;
+    }
+
+    Vector2 GridToWorld(Vector2Int cell)
+    {
+        cell.x = Mathf.Clamp(cell.x, 0, colCount - 1);
+        cell.y = Mathf.Clamp(cell.y, 0, rowCount - 1);
+        return new Vector2(cell.x + 0.5f, cell.y + 0.5f);
     }
 
     void Update()
     {
         ColorGrid();
-
-        // 1. Convert screen-space to world-space
-        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // 2. Convert world-space to grid-space ("quantization/localization")
-        //Vector2Int cell = 
-        Debug.Log(mouse);
     }
 }
