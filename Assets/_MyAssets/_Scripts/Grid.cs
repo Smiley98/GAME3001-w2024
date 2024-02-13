@@ -7,7 +7,8 @@ public enum TileType : int
     GRASS,
     WATER,
     MUD,
-    STONE
+    STONE,
+    INVALID,
 }
 
 public class Grid : MonoBehaviour
@@ -16,6 +17,8 @@ public class Grid : MonoBehaviour
     List<List<GameObject>> grid = new List<List<GameObject>>();
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
+
+    TileType tileState = TileType.INVALID;
 
     int[,] tiles =
     {
@@ -54,6 +57,8 @@ public class Grid : MonoBehaviour
             x = xStart;
             y += 1.0f;
         }
+
+        Debug.Log("Tile state: " + tileState);
     }
 
     void ColorGrid()
@@ -66,28 +71,10 @@ public class Grid : MonoBehaviour
                 //Vector2 position = tile.transform.position;
                 //position = new Vector2(position.x / colCount, position.y / rowCount);
                 //tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
+                
                 GameObject tile = grid[row][col];
                 TileType type = (TileType)tiles[row, col];
-                Color color = Color.white;
-                switch (type)
-                {
-                    case TileType.GRASS:
-                        color = Color.green;
-                        break;
-
-                    case TileType.WATER:
-                        color = Color.blue;
-                        break;
-
-                    case TileType.MUD:
-                        color = Color.red;
-                        break;
-                       
-                    case TileType.STONE:
-                        color = Color.grey;
-                        break;
-                }
-                tile.GetComponent<SpriteRenderer>().color = color;
+                tile.GetComponent<SpriteRenderer>().color = TileColor(type);
             }
         }
 
@@ -101,6 +88,34 @@ public class Grid : MonoBehaviour
         //GameObject test = Instantiate(tilePrefab);
         //test.transform.position = world;
         //test.GetComponent<SpriteRenderer>().color = Color.magenta;
+    }
+
+    Color TileColor(TileType type)
+    {
+        Color color = Color.white;
+        switch (type)
+        {
+            case TileType.GRASS:
+                color = Color.green;
+                break;
+
+            case TileType.WATER:
+                color = Color.blue;
+                break;
+
+            case TileType.MUD:
+                color = Color.red;
+                break;
+
+            case TileType.STONE:
+                color = Color.grey;
+                break;
+
+            case TileType.INVALID:
+                color = Color.magenta;
+                break;
+        }
+        return color;
     }
 
     // Quantization
@@ -123,5 +138,29 @@ public class Grid : MonoBehaviour
     void Update()
     {
         ColorGrid();
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            int state = (int)tileState;
+            ++state;
+            state %= (int)TileType.INVALID;
+            tileState = (TileType)state;
+            Debug.Log("Tile state: " + tileState);
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            tileState = TileType.INVALID;
+            Debug.Log("Tile state: " + tileState);
+        }
+
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int cell = WorldToGrid(mouse);
+        if (Input.GetKeyDown(KeyCode.Space) && tileState != TileType.INVALID)
+        {
+            tiles[cell.y, cell.x] = (int)tileState;
+        }
+
+        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = TileColor(tileState);
     }
 }
