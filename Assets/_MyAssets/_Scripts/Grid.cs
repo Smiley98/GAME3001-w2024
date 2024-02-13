@@ -24,8 +24,6 @@ public class Grid : MonoBehaviour
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
 
-    TileType tileState = TileType.INVALID;
-
     int[,] tiles =
     {
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
@@ -63,8 +61,6 @@ public class Grid : MonoBehaviour
             x = xStart;
             y += 1.0f;
         }
-
-        Debug.Log("Tile state: " + tileState);
     }
 
     void ColorGrid()
@@ -144,29 +140,15 @@ public class Grid : MonoBehaviour
     void Update()
     {
         ColorGrid();
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            int state = (int)tileState;
-            ++state;
-            state %= (int)TileType.INVALID;
-            tileState = (TileType)state;
-            Debug.Log("Tile state: " + tileState);
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            tileState = TileType.INVALID;
-            Debug.Log("Tile state: " + tileState);
-        }
-
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int cell = WorldToGrid(mouse);
-        if (Input.GetKeyDown(KeyCode.Space) && tileState != TileType.INVALID)
-        {
-            tiles[cell.y, cell.x] = (int)tileState;
-        }
+        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
 
-        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = TileColor(tileState);
+        // For the Neighbours function, you'll need to store the up-down-left-right & diagonal tiles
+        // You'll also need to ensure said tiles exist (cannot have negative indices)
+        grid[cell.y - 1][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        grid[cell.y + 1][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        grid[cell.y][cell.x - 1].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        grid[cell.y][cell.x + 1].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
     }
 }
