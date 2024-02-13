@@ -51,9 +51,16 @@ public class Grid : MonoBehaviour
             }
         }
 
-        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2Int cell = WorldToGrid(mouse);
-        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+        // Quantization test
+        //Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Vector2Int cell = WorldToGrid(mouse);
+        //grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+
+        // Localization test
+        //Vector2 world = GridToWorld(cell);
+        //GameObject test = Instantiate(tilePrefab);
+        //test.transform.position = world;
+        //test.GetComponent<SpriteRenderer>().color = Color.magenta;
     }
 
     // Quantization
@@ -63,6 +70,14 @@ public class Grid : MonoBehaviour
         cell.x = Mathf.Clamp(cell.x, 0, colCount - 1);
         cell.y = Mathf.Clamp(cell.y, 0, rowCount - 1);
         return cell;
+    }
+
+    // Localization
+    Vector2 GridToWorld(Vector2Int cell)
+    {
+        cell.x = Mathf.Clamp(cell.x, 0, colCount - 1);
+        cell.y = Mathf.Clamp(cell.y, 0, rowCount - 1);
+        return new Vector2(cell.x + 0.5f, cell.y + 0.5f);
     }
 
     void Update()
