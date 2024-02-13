@@ -6,13 +6,13 @@ public class Grid : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
     List<List<GameObject>> grid = new List<List<GameObject>>();
-    int rowCount = 20;      // vertical tile count
-    int colCount = 40;      // horizontal tile count
+    int rowCount = 10;      // vertical tile count
+    int colCount = 20;      // horizontal tile count
 
     void Start()
     {
-        float xStart = -colCount / 2.0f + 0.5f;    // left (-x)
-        float yStart = -rowCount / 2.0f + 0.5f;    // bottom (-y)
+        float xStart = 0.0f + 0.5f;    // left (-x)
+        float yStart = 0.0f + 0.5f;    // bottom (-y)
         float x = xStart;
         float y = yStart;
 
@@ -44,12 +44,9 @@ public class Grid : MonoBehaviour
                 GameObject tile = grid[row][col];
                 Vector2 position = tile.transform.position;
 
-                // We know our grid positions are x = [-10, 10], y = [-5, 5]
                 // We know colors are represented as RGBA values between 0 and 1
                 // Hence, we can convert our positions to the range [0, 1] to render them as colours!
-                position = new Vector2(position.x / (colCount * 0.5f), position.y / (rowCount * 0.5f));
-                position *= 0.5f;
-                position += new Vector2(0.5f, 0.5f);
+                position = new Vector2(position.x / colCount, position.y / rowCount);
                 tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
             }
         }
