@@ -2,14 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TileType : int
+{
+    GRASS,
+    WATER,
+    MUD,
+    STONE
+}
+
 public class Grid : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
     List<List<GameObject>> grid = new List<List<GameObject>>();
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
-    //int tileWidth = 1;
-    //int tileHeight = 1;
+
+    int[,] tiles =
+    {
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    };
 
     void Start()
     {
@@ -51,6 +71,27 @@ public class Grid : MonoBehaviour
                 // Normalize position to render as color
                 position = new Vector2(position.x / 20.0f, position.y / 10.0f);
                 tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
+
+                Color color = Color.white;
+                switch ((TileType)tiles[row, col])
+                {
+                    case TileType.GRASS:
+                        color = Color.green;
+                        break;
+
+                    case TileType.WATER:
+                        color = Color.blue;
+                        break;
+
+                    case TileType.MUD:
+                        color = Color.red;
+                        break;
+
+                    case TileType.STONE:
+                        color = Color.grey;
+                        break;
+                }
+                tile.GetComponent<SpriteRenderer>().color = color;
             }
         }
 
