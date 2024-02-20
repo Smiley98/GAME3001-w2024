@@ -67,23 +67,31 @@ public class Grid : MonoBehaviour
             frontier.Enqueue(new Vector2Int(col, 0));
         }
 
-        // Loops through all elements in the queue WITHOUT removing anything
-        foreach (Vector2Int cell in frontier)
-        {
-            Debug.Log(cell);
-        }
+        // Queue test
+        //// Loops through all elements in the queue WITHOUT removing anything
+        //foreach (Vector2Int cell in frontier)
+        //{
+        //    Debug.Log(cell);
+        //}
+        //
+        //// Loops throught the queue and deletes each element
+        //while (frontier.Count > 0)
+        //{
+        //    Debug.Log(frontier.Dequeue());
+        //}
+        //
+        //// (This logs nothing because there's nothing left in the queue)
+        //foreach (Vector2Int cell in frontier)
+        //{
+        //    Debug.Log(cell);
+        //}
 
-        // Loops throught the queue and deletes each element
-        while (frontier.Count > 0)
-        {
-            Debug.Log(frontier.Dequeue());
-        }
-
-        // (This logs nothing because there's nothing left in the queue)
-        foreach (Vector2Int cell in frontier)
-        {
-            Debug.Log(cell);
-        }
+        // Set test -- despite adding the same element 5 times, its count remains 1 because sets store ONLY unique elements
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    reached.Add(new Vector2Int(1, 2));
+        //}
+        //Debug.Log(reached.Count);
     }
 
     // Set each tile's sprite colour based on its tile type
