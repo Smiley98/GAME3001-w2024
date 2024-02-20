@@ -236,6 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2652050411793785358, guid: 50e76cd437d50c846bf87251b21d9084, type: 3}
+  stepCount: 1
   start: {x: 1, y: 1}
   end: {x: 18, y: 8}
 --- !u!1 &1843075386

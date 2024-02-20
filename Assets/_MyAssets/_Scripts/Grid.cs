@@ -10,6 +10,8 @@ public class Grid : MonoBehaviour
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
 
+    [SerializeField] int stepCount;
+
     // Begin & goal set in inspector
     [SerializeField] Vector2Int start;
     [SerializeField] Vector2Int end;
@@ -61,13 +63,13 @@ public class Grid : MonoBehaviour
         // Must re-compute tile costs every time start or end is changed
         UpdateTileCosts(end);
 
-        // Adds the bottom row of tiles to our queue:
-        for (int col = 0; col < colCount; col++)
-        {
-            frontier.Enqueue(new Vector2Int(col, 0));
-        }
-
         // Queue test
+        //// Adds the bottom row of tiles to our queue:
+        //for (int col = 0; col < colCount; col++)
+        //{
+        //    frontier.Enqueue(new Vector2Int(col, 0));
+        //}
+        //
         //// Loops through all elements in the queue WITHOUT removing anything
         //foreach (Vector2Int cell in frontier)
         //{
@@ -180,6 +182,31 @@ public class Grid : MonoBehaviour
         return neighbours;
     }
 
+    List<Vector2Int> Cells(Vector2Int cell)
+    {
+        // Bounding checks
+        bool bot = cell.y - 1 >= 0;
+        bool top = cell.y + 1 < rowCount;
+        bool left = cell.x - 1 >= 0;
+        bool right = cell.x + 1 < colCount;
+
+        List<Vector2Int> neighbours = new List<Vector2Int>();
+
+        // Adjacent
+        if (bot) neighbours.Add(new Vector2Int(cell.x, cell.y - 1));
+        if (top) neighbours.Add(new Vector2Int(cell.x, cell.y + 1));
+        if (left) neighbours.Add(new Vector2Int(cell.x - 1, cell.y));
+        if (right) neighbours.Add(new Vector2Int(cell.x + 1, cell.y));
+
+        // Diagonals
+        //if (bot && left) neighbours.Add(grid[cell.y - 1][cell.x - 1]);
+        //if (top && left) neighbours.Add(grid[cell.y + 1][cell.x - 1]);
+        //if (bot && right) neighbours.Add(grid[cell.y - 1][cell.x + 1]);
+        //if (top && right) neighbours.Add(grid[cell.y + 1][cell.x + 1]);
+
+        return neighbours;
+    }
+
     // Scores left-right-up-down only
     float Manhattan(Vector2Int cell1, Vector2Int cell2)
     {
@@ -236,7 +263,36 @@ public class Grid : MonoBehaviour
 
     void FloodFill(Vector2Int cell)
     {
+        // Add the starting cell to our data strutures
+        frontier.Enqueue(cell);
+        reached.Add(cell);
 
+        // Loop until there's no more elements on the frontier (nowhere else to explore)!
+        //for (int i = 0; i < stepCount; i++)
+        while (frontier.Count > 0)
+        {
+            // Lookup the element at the front of the queue and remove it.
+            // "Serve the customer who's first in line"
+            Vector2Int current = frontier.Dequeue();
+
+            foreach (Vector2Int neighbour in Cells(cell))
+            {
+                // If we have yet to explore the current neighbouring cell,
+                // add it to the frontier (enqueue it for exploration [search its neighbours])
+                // and add it to reached so we can't re-discover an existing cell we've already searched
+                if (!reached.Contains(neighbour))
+                {
+                    frontier.Enqueue(neighbour);
+                    reached.Add(neighbour);
+                    grid[neighbour.y][neighbour.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+                }
+            }
+
+
+        }
+
+        frontier.Clear();
+        reached.Clear();
     }
 
     void Update()
@@ -252,7 +308,9 @@ public class Grid : MonoBehaviour
         }
 
         // Color each tile based on its type (stored in the Tile script component)
-        ColorGrid();
+        //ColorGrid();
+
+        FloodFill(new Vector2Int(9, 4));
 
         // Convert cursor from world to grid space (quantization)
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -274,7 +332,7 @@ public class Grid : MonoBehaviour
         }
 
         // Render start and end
-        grid[start.y][start.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
-        grid[end.y][end.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        //grid[start.y][start.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        //grid[end.y][end.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
     }
 }
