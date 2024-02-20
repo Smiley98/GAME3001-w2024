@@ -136,6 +136,7 @@ public class Grid : MonoBehaviour
 
     List<GameObject> Neighbours(Vector2Int cell)
     {
+        // Bounding checks
         bool bot = cell.y - 1 >= 0;
         bool top = cell.y + 1 < rowCount;
         bool left = cell.x - 1 >= 0;
@@ -143,19 +144,17 @@ public class Grid : MonoBehaviour
 
         List<GameObject> neighbours = new List<GameObject>();
 
-        //neighbours.Add(grid[cell.x - 1][cell.y - 1]);
-        //neighbours.Add(grid[cell.x - 1][cell.y + 1]);
-        //neighbours.Add(grid[cell.x + 1][cell.y + 1]);
-        //neighbours.Add(grid[cell.x + 1][cell.y - 1]);
-        //neighbours.Add(grid[cell.x][cell.y - 1]);
-        //neighbours.Add(grid[cell.x][cell.y + 1]);
-        //neighbours.Add(grid[cell.x + 1][cell.y]);
-        //neighbours.Add(grid[cell.x - 1][cell.y]);
-
+        // Adjacent
         if (bot) neighbours.Add(grid[cell.y - 1][cell.x]);
         if (top) neighbours.Add(grid[cell.y + 1][cell.x]);
         if (left) neighbours.Add(grid[cell.y][cell.x - 1]);
         if (right) neighbours.Add(grid[cell.y][cell.x + 1]);
+
+        // Diagonals
+        if (bot && left) neighbours.Add(grid[cell.y - 1][cell.x - 1]);
+        if (top && left) neighbours.Add(grid[cell.y + 1][cell.x - 1]);
+        if (bot && right) neighbours.Add(grid[cell.y - 1][cell.x + 1]);
+        if (top && right) neighbours.Add(grid[cell.y + 1][cell.x + 1]);
 
         return neighbours;
     }
