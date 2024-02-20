@@ -159,6 +159,44 @@ public class Grid : MonoBehaviour
         return neighbours;
     }
 
+    float Manhattan(Vector2Int cell1, Vector2Int cell2)
+    {
+        return Mathf.Abs(cell1.x - cell2.x) + Mathf.Abs(cell1.y - cell2.y);
+    }
+
+    float Euclidean(Vector2Int cell1, Vector2Int cell2)
+    {
+        return Vector2Int.Distance(cell1, cell2);
+    }
+
+    float Cost(Vector2Int current, Vector2Int goal)
+    {
+        Tile tile = grid[current.y][current.x].GetComponent<Tile>();
+
+        float terrainCost = 0.0f;
+        switch (tile.type)
+        {
+            case TileType.GRASS:
+                terrainCost = 10.0f;
+                break;
+
+            case TileType.WATER:
+                terrainCost = 20.0f;
+                break;
+
+            case TileType.MUD:
+                terrainCost = 50.0f;
+                break;
+
+            case TileType.STONE:
+                terrainCost = 100.0f;
+                break;
+        }
+
+        float distanceCost = Manhattan(current, goal);
+        return terrainCost + distanceCost;
+    }
+
     void Update()
     {
         // Reset every tile's sprite color to white every frame for testing
