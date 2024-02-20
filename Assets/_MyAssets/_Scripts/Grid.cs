@@ -14,6 +14,9 @@ public class Grid : MonoBehaviour
     [SerializeField] Vector2Int start;
     [SerializeField] Vector2Int end;
 
+    Queue<Vector2Int> frontier = new Queue<Vector2Int>();
+    HashSet<Vector2Int> reached = new HashSet<Vector2Int>();
+
     // Tile types (dictates the properties of each tile)
     int[,] tiles =
     {
@@ -57,6 +60,30 @@ public class Grid : MonoBehaviour
 
         // Must re-compute tile costs every time start or end is changed
         UpdateTileCosts(end);
+
+        // Adds the bottom row of tiles to our queue:
+        for (int col = 0; col < colCount; col++)
+        {
+            frontier.Enqueue(new Vector2Int(col, 0));
+        }
+
+        // Loops through all elements in the queue WITHOUT removing anything
+        foreach (Vector2Int cell in frontier)
+        {
+            Debug.Log(cell);
+        }
+
+        // Loops throught the queue and deletes each element
+        while (frontier.Count > 0)
+        {
+            Debug.Log(frontier.Dequeue());
+        }
+
+        // (This logs nothing because there's nothing left in the queue)
+        foreach (Vector2Int cell in frontier)
+        {
+            Debug.Log(cell);
+        }
     }
 
     // Set each tile's sprite colour based on its tile type
@@ -197,6 +224,11 @@ public class Grid : MonoBehaviour
                 tile.cost = Cost(new Vector2Int(col, row), goal);
             }
         }
+    }
+
+    void FloodFill(Vector2Int cell)
+    {
+
     }
 
     void Update()
