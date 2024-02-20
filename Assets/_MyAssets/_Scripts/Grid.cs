@@ -3,11 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Homework hints:
-// Associate a terrain cost with each unique tile type ie grass = 10, water = 50, etc
-// Furthermore, the total cost of each tile should be terrain cost + distance score
-// where distance score is the distance from the current tile to the goal tile
-// (you will need to define a goal tile)
 public class Grid : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
@@ -15,6 +10,11 @@ public class Grid : MonoBehaviour
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
 
+    // Begin & goal set in inspector
+    [SerializeField] Vector2Int start;
+    [SerializeField] Vector2Int end;
+
+    // Tile types (dictates the properties of each tile)
     int[,] tiles =
     {
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
@@ -29,6 +29,7 @@ public class Grid : MonoBehaviour
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
     };
 
+    // Initialize 2D list of tile game objects based on tile integer 2D array 
     void Start()
     {
         float xStart = 0.0f + 0.5f;    // left (-x)
@@ -53,42 +54,26 @@ public class Grid : MonoBehaviour
             x = xStart;
             y += 1.0f;
         }
+
+        // Must re-compute tile costs every time start or end is changed
+        UpdateTileCosts(end);
     }
 
+    // Set each tile's sprite colour based on its tile type
     void ColorGrid()
     {
-        // Make increasingly red as we move right, make increasingly green as we move up
         for (int row = 0; row < rowCount; row++)
         {
             for (int col = 0; col < colCount; col++)
             {
-                //Vector2 position = tile.transform.position;
-                //position = new Vector2(position.x / colCount, position.y / rowCount);
-                //tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
-                
                 GameObject tile = grid[row][col];
-
-                // Before we made a 1:1 map of game objects to tile integers
-                //TileType type = (TileType)tiles[row, col];
-
-                // Now each tile stores its type so we can access it directly for rendering!
                 TileType type = tile.GetComponent<Tile>().type;
                 tile.GetComponent<SpriteRenderer>().color = TileColor(type);
             }
         }
-
-        // Quantization test
-        //Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Vector2Int cell = WorldToGrid(mouse);
-        //grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
-
-        // Localization test
-        //Vector2 world = GridToWorld(cell);
-        //GameObject test = Instantiate(tilePrefab);
-        //test.transform.position = world;
-        //test.GetComponent<SpriteRenderer>().color = Color.magenta;
     }
 
+    // Color based on tile type
     Color TileColor(TileType type)
     {
         Color color = Color.white;
@@ -134,6 +119,7 @@ public class Grid : MonoBehaviour
         return new Vector2(cell.x + 0.5f, cell.y + 0.5f);
     }
 
+    // Adjacent & diagonal tiles
     List<GameObject> Neighbours(Vector2Int cell)
     {
         // Bounding checks
@@ -159,16 +145,19 @@ public class Grid : MonoBehaviour
         return neighbours;
     }
 
+    // Scores left-right-up-down only
     float Manhattan(Vector2Int cell1, Vector2Int cell2)
     {
         return Mathf.Abs(cell1.x - cell2.x) + Mathf.Abs(cell1.y - cell2.y);
     }
 
+    // Prefers diagonals over left-right-up-down
     float Euclidean(Vector2Int cell1, Vector2Int cell2)
     {
         return Vector2Int.Distance(cell1, cell2);
     }
 
+    // Cost of each tile with respect to the goal
     float Cost(Vector2Int current, Vector2Int goal)
     {
         Tile tile = grid[current.y][current.x].GetComponent<Tile>();
@@ -197,6 +186,19 @@ public class Grid : MonoBehaviour
         return terrainCost + distanceCost;
     }
 
+    // Recompute cost of each tile with respect to the goal
+    void UpdateTileCosts(Vector2Int goal)
+    {
+        for (int row = 0; row < rowCount; row++)
+        {
+            for (int col = 0; col < colCount; col++)
+            {
+                Tile tile = grid[row][col].GetComponent<Tile>();
+                tile.cost = Cost(new Vector2Int(col, row), goal);
+            }
+        }
+    }
+
     void Update()
     {
         // Reset every tile's sprite color to white every frame for testing
@@ -209,16 +211,30 @@ public class Grid : MonoBehaviour
             }
         }
 
-        //ColorGrid();
+        // Color each tile based on its type (stored in the Tile script component)
+        ColorGrid();
+
+        // Convert cursor from world to grid space (quantization)
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int cell = WorldToGrid(mouse);
 
-        List<GameObject> neighbours = Neighbours(cell);
-        for (int i = 0; i < neighbours.Count; i++)
+        // Neighbours test
+        //List<GameObject> neighbours = Neighbours(cell);
+        //for (int i = 0; i < neighbours.Count; i++)
+        //{
+        //    GameObject go = neighbours[i];
+        //    Tile tile = go.GetComponent<Tile>();
+        //    go.GetComponent<SpriteRenderer>().color = TileColor(tile.type);
+        //}
+
+        // I have no idea how to render per-object text in Unity...
+        if (Input.GetMouseButtonDown(0))
         {
-            GameObject go = neighbours[i];
-            Tile tile = go.GetComponent<Tile>();
-            go.GetComponent<SpriteRenderer>().color = TileColor(tile.type);
+            Debug.Log($"Current tile [{cell.y}, {cell.x}] costs {Cost(cell, end)}");
         }
+
+        // Render start and end
+        grid[start.y][start.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        grid[end.y][end.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
     }
 }

@@ -14,4 +14,5 @@ public enum TileType : int
 public class Tile : MonoBehaviour
 {
     public TileType type = TileType.INVALID;
+    public float cost = 0.0f;
 }
