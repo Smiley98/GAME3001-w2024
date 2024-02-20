@@ -3,15 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TileType : int
-{
-    GRASS,
-    WATER,
-    MUD,
-    STONE,
-    INVALID,
-}
-
 // Homework hints:
 // Associate a terrain cost with each unique tile type ie grass = 10, water = 50, etc
 // Furthermore, the total cost of each tile should be terrain cost + distance score
@@ -53,9 +44,10 @@ public class Grid : MonoBehaviour
             {
                 // For every column in the row, we must create a tile and then store it!
                 GameObject tile = Instantiate(tilePrefab);
+                tile.GetComponent<Tile>().type = (TileType)tiles[row, col];
                 tile.transform.position = new Vector3(x, y);
-                x += 1.0f;              // Step 1 unit right each iteration
                 grid[row].Add(tile);    // Store the resultant tile in the 2D grid list
+                x += 1.0f;              // Step 1 unit right each iteration
             }
             // Reset column position and increment row position when current row finishes
             x = xStart;
@@ -75,7 +67,12 @@ public class Grid : MonoBehaviour
                 //tile.GetComponent<SpriteRenderer>().color = new Color(position.x, position.y, 0.0f, 1.0f);
                 
                 GameObject tile = grid[row][col];
-                TileType type = (TileType)tiles[row, col];
+
+                // Before we made a 1:1 map of game objects to tile integers
+                //TileType type = (TileType)tiles[row, col];
+
+                // Now each tile stores its type so we can access it directly for rendering!
+                TileType type = tile.GetComponent<Tile>().type;
                 tile.GetComponent<SpriteRenderer>().color = TileColor(type);
             }
         }
@@ -137,18 +134,54 @@ public class Grid : MonoBehaviour
         return new Vector2(cell.x + 0.5f, cell.y + 0.5f);
     }
 
+    List<GameObject> Neighbours(Vector2Int cell)
+    {
+        bool bot = cell.y - 1 >= 0;
+        bool top = cell.y + 1 < rowCount;
+        bool left = cell.x - 1 >= 0;
+        bool right = cell.x + 1 < colCount;
+
+        List<GameObject> neighbours = new List<GameObject>();
+
+        //neighbours.Add(grid[cell.x - 1][cell.y - 1]);
+        //neighbours.Add(grid[cell.x - 1][cell.y + 1]);
+        //neighbours.Add(grid[cell.x + 1][cell.y + 1]);
+        //neighbours.Add(grid[cell.x + 1][cell.y - 1]);
+        //neighbours.Add(grid[cell.x][cell.y - 1]);
+        //neighbours.Add(grid[cell.x][cell.y + 1]);
+        //neighbours.Add(grid[cell.x + 1][cell.y]);
+        //neighbours.Add(grid[cell.x - 1][cell.y]);
+
+        if (bot) neighbours.Add(grid[cell.y - 1][cell.x]);
+        if (top) neighbours.Add(grid[cell.y + 1][cell.x]);
+        if (left) neighbours.Add(grid[cell.y][cell.x - 1]);
+        if (right) neighbours.Add(grid[cell.y][cell.x + 1]);
+
+        return neighbours;
+    }
+
     void Update()
     {
-        ColorGrid();
+        // Reset every tile's sprite color to white every frame for testing
+        for (int row = 0; row < rowCount; row++)
+        {
+            for (int col = 0; col < colCount; col++)
+            {
+                GameObject tile = grid[row][col];
+                tile.GetComponent<SpriteRenderer>().color = Color.white;
+            }
+        }
+
+        //ColorGrid();
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int cell = WorldToGrid(mouse);
-        grid[cell.y][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
 
-        // For the Neighbours function, you'll need to store the up-down-left-right & diagonal tiles
-        // You'll also need to ensure said tiles exist (cannot have negative indices)
-        grid[cell.y - 1][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
-        grid[cell.y + 1][cell.x].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
-        grid[cell.y][cell.x - 1].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
-        grid[cell.y][cell.x + 1].GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
+        List<GameObject> neighbours = Neighbours(cell);
+        for (int i = 0; i < neighbours.Count; i++)
+        {
+            GameObject go = neighbours[i];
+            Tile tile = go.GetComponent<Tile>();
+            go.GetComponent<SpriteRenderer>().color = TileColor(tile.type);
+        }
     }
 }
