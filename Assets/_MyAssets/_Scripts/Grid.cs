@@ -62,6 +62,7 @@ public class Grid : MonoBehaviour
 
         // Must re-compute tile costs every time start or end is changed
         UpdateTileCosts(end);
+        FloodFill(new Vector2Int(9, 4));
 
         // Queue test
         //// Adds the bottom row of tiles to our queue:
@@ -275,7 +276,7 @@ public class Grid : MonoBehaviour
             // "Serve the customer who's first in line"
             Vector2Int current = frontier.Dequeue();
 
-            foreach (Vector2Int neighbour in Cells(cell))
+            foreach (Vector2Int neighbour in Cells(current))
             {
                 // If we have yet to explore the current neighbouring cell,
                 // add it to the frontier (enqueue it for exploration [search its neighbours])
@@ -287,8 +288,6 @@ public class Grid : MonoBehaviour
                     grid[neighbour.y][neighbour.x].GetComponent<SpriteRenderer>().color = Color.magenta;
                 }
             }
-
-
         }
 
         frontier.Clear();
@@ -298,19 +297,17 @@ public class Grid : MonoBehaviour
     void Update()
     {
         // Reset every tile's sprite color to white every frame for testing
-        for (int row = 0; row < rowCount; row++)
-        {
-            for (int col = 0; col < colCount; col++)
-            {
-                GameObject tile = grid[row][col];
-                tile.GetComponent<SpriteRenderer>().color = Color.white;
-            }
-        }
+        //for (int row = 0; row < rowCount; row++)
+        //{
+        //    for (int col = 0; col < colCount; col++)
+        //    {
+        //        GameObject tile = grid[row][col];
+        //        tile.GetComponent<SpriteRenderer>().color = Color.white;
+        //    }
+        //}
 
         // Color each tile based on its type (stored in the Tile script component)
         //ColorGrid();
-
-        FloodFill(new Vector2Int(9, 4));
 
         // Convert cursor from world to grid space (quantization)
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
