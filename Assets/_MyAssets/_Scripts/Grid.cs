@@ -62,7 +62,6 @@ public class Grid : MonoBehaviour
 
         // Must re-compute tile costs every time start or end is changed
         UpdateTileCosts(end);
-        FloodFill(new Vector2Int(9, 4));
 
         // Queue test
         //// Adds the bottom row of tiles to our queue:
@@ -269,8 +268,8 @@ public class Grid : MonoBehaviour
         reached.Add(cell);
 
         // Loop until there's no more elements on the frontier (nowhere else to explore)!
-        //for (int i = 0; i < stepCount; i++)
-        while (frontier.Count > 0)
+        for (int i = 0; i < stepCount; i++)
+        //while (frontier.Count > 0)
         {
             // Lookup the element at the front of the queue and remove it.
             // "Serve the customer who's first in line"
@@ -307,7 +306,8 @@ public class Grid : MonoBehaviour
         //}
 
         // Color each tile based on its type (stored in the Tile script component)
-        //ColorGrid();
+        ColorGrid();
+        FloodFill(new Vector2Int(9, 4));
 
         // Convert cursor from world to grid space (quantization)
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
