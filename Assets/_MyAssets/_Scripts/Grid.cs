@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    // Rendering only
     [SerializeField] GameObject tilePrefab;
     List<List<GameObject>> grid = new List<List<GameObject>>();
+
     int rowCount = 10;      // vertical tile count
     int colCount = 20;      // horizontal tile count
 
@@ -19,24 +21,32 @@ public class Grid : MonoBehaviour
     Queue<Vector2Int> frontier = new Queue<Vector2Int>();
     HashSet<Vector2Int> reached = new HashSet<Vector2Int>();
 
+    PathingGrid pathing = new PathingGrid();
+
     // Tile types (dictates the properties of each tile)
     int[,] tiles =
     {
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
     };
 
     // Initialize 2D list of tile game objects based on tile integer 2D array 
     void Start()
     {
+        //pathing.Test();
+        pathing.distance = CellGrid.Euclidean;
+        pathing.heuristic = TerrainCost;
+
+        List<Vector2Int> path = pathing.FindPath(start, end, tiles);
+
         float xStart = 0.0f + 0.5f;    // left (-x)
         float yStart = 0.0f + 0.5f;    // bottom (-y)
         float x = xStart;
@@ -246,6 +256,30 @@ public class Grid : MonoBehaviour
 
         float distanceCost = Manhattan(current, goal);
         return terrainCost + distanceCost;
+    }
+
+    float TerrainCost(int type)
+    {
+        float terrainCost = 0.0f;
+        switch ((TileType)type)
+        {
+            case TileType.GRASS:
+                terrainCost = 10.0f;
+                break;
+
+            case TileType.WATER:
+                terrainCost = 20.0f;
+                break;
+
+            case TileType.MUD:
+                terrainCost = 50.0f;
+                break;
+
+            case TileType.STONE:
+                terrainCost = 100.0f;
+                break;
+        }
+        return terrainCost;
     }
 
     // Recompute cost of each tile with respect to the goal
