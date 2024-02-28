@@ -5,45 +5,8 @@ using Utils;
 
 // y = row, x = column
 using Cell = UnityEngine.Vector2Int;
-public class CellGrid
-{
-    public static List<Cell> Neighbours(Cell cell, int rows, int cols)
-    {
-        List<Cell> neighbours = new List<Cell>();
-
-        // Bounds
-        bool bot = cell.y - 1 >= 0;
-        bool top = cell.y + 1 < rows;
-        bool left = cell.x - 1 >= 0;
-        bool right = cell.x + 1 < cols;
-
-        // Adjacent
-        if (bot) neighbours.Add(new Cell(cell.x, cell.y - 1));
-        if (top) neighbours.Add(new Cell(cell.x, cell.y + 1));
-        if (left) neighbours.Add(new Cell(cell.x - 1, cell.y));
-        if (right) neighbours.Add(new Cell(cell.x + 1, cell.y));
-
-        // Diagonal
-        //if (bot && left) neighbours.Add(new Cell(cell.x - 1, cell.y - 1));
-        //if (top && left) neighbours.Add(new Cell(cell.x - 1, cell.y + 1));
-        //if (bot && right) neighbours.Add(new Cell(cell.x + 1, cell.y - 1));
-        //if (top && right) neighbours.Add(new Cell(cell.x + 1, cell.y + 1));
-
-        return neighbours;
-    }
-
-    // Adjacent
-    public static float Manhattan(Cell cell1, Cell cell2)
-    {
-        return Mathf.Abs(cell1.x - cell2.x) + Mathf.Abs(cell1.y - cell2.y);
-    }
-
-    // Diagonal
-    public static float Euclidean(Cell cell1, Cell cell2)
-    {
-        return Cell.Distance(cell1, cell2);
-    }
-}
+public delegate float Distance(Cell cell1, Cell cell2);
+public delegate float Heuristic(int type);
 
 // let c = current node (top of the queue / head of the frontier)
 // let n = next node (neighbour)
@@ -56,15 +19,10 @@ public class CellGrid
 // h(n) also includes additional heuristic evaluations such as terrain cost
 
 // A* minimizes f(n) = g(n) + h(n)
-public class PathingGrid
+public static class Pathing
 {
-    public delegate float Distance(Cell cell1, Cell cell2);
-    public delegate float Heuristic(int type);
-
-    public Distance distance;
-    public Heuristic heuristic;
-
-    public List<Cell> FindPath(Cell start, Cell end, int[,] tiles)
+    public static List<Cell> Find(Cell start, Cell end, int[,] tiles,
+        Distance distance, Heuristic heuristic)
     {
         int rows = tiles.GetLength(0);
         int cols = tiles.GetLength(1);
@@ -91,7 +49,7 @@ public class PathingGrid
 
             float gNew, hNew;
             closedList[current.y, current.x] = true;
-            foreach (Cell neighbour in CellGrid.Neighbours(current, rows, cols))
+            foreach (Cell neighbour in Neighbours(current, rows, cols))
             {
                 if (closedList[neighbour.y, neighbour.x]) continue;
 
@@ -129,6 +87,43 @@ public class PathingGrid
             path.Reverse();
         }
         return path;
+    }
+
+    public static List<Cell> Neighbours(Cell cell, int rows, int cols)
+    {
+        List<Cell> neighbours = new List<Cell>();
+
+        // Bounds
+        bool bot = cell.y - 1 >= 0;
+        bool top = cell.y + 1 < rows;
+        bool left = cell.x - 1 >= 0;
+        bool right = cell.x + 1 < cols;
+
+        // Adjacent
+        if (bot) neighbours.Add(new Cell(cell.x, cell.y - 1));
+        if (top) neighbours.Add(new Cell(cell.x, cell.y + 1));
+        if (left) neighbours.Add(new Cell(cell.x - 1, cell.y));
+        if (right) neighbours.Add(new Cell(cell.x + 1, cell.y));
+
+        // Diagonal
+        //if (bot && left) neighbours.Add(new Cell(cell.x - 1, cell.y - 1));
+        //if (top && left) neighbours.Add(new Cell(cell.x - 1, cell.y + 1));
+        //if (bot && right) neighbours.Add(new Cell(cell.x + 1, cell.y - 1));
+        //if (top && right) neighbours.Add(new Cell(cell.x + 1, cell.y + 1));
+
+        return neighbours;
+    }
+
+    // Adjacent
+    public static float Manhattan(Cell cell1, Cell cell2)
+    {
+        return Mathf.Abs(cell1.x - cell2.x) + Mathf.Abs(cell1.y - cell2.y);
+    }
+
+    // Diagonal
+    public static float Euclidean(Cell cell1, Cell cell2)
+    {
+        return Cell.Distance(cell1, cell2);
     }
 }
 
