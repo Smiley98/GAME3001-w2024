@@ -12,6 +12,13 @@ public enum TileType : int
     INVALID,
 }
 
+public enum TileEditMode
+{
+    NONE,
+    START,
+    END
+}
+
 public class TileGrid : MonoBehaviour
 {
     // Rendering only
@@ -22,12 +29,15 @@ public class TileGrid : MonoBehaviour
     [SerializeField] Vector2Int start;
     [SerializeField] Vector2Int end;
 
+    [SerializeField] Pathing.DistanceType distanceType;
+    TileEditMode tileEditMode = TileEditMode.NONE;
+
     // Tile types (dictates the properties of each tile)
     int[,] tiles =
     {
         { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
         { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
         { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
         { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
         { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
@@ -40,12 +50,12 @@ public class TileGrid : MonoBehaviour
     // Create 2D list of game objects to represent tile positions in the world
     void Start()
     {
-        float xStart = 0.0f + 0.5f;    // left (-x)
-        float yStart = 0.0f + 0.5f;    // bottom (-y)
-        float x = xStart;
-        float y = yStart;
         int rowCount = tiles.GetLength(0);
         int colCount = tiles.GetLength(1);
+        float xStart = 0.0f + 0.5f;         // left (-x)
+        float yStart = rowCount - 0.5f;     // top (+y)
+        float x = xStart;
+        float y = yStart;
         for (int row = 0; row < rowCount; row++)
         {
             grid.Add(new List<GameObject>());
@@ -58,7 +68,7 @@ public class TileGrid : MonoBehaviour
             }
             // Reset column position and increment row position when current row finishes
             x = xStart;
-            y += 1.0f;
+            y -= 1.0f;
         }
     }
 
@@ -118,9 +128,14 @@ public class TileGrid : MonoBehaviour
 
     void Update()
     {
-        // A*
-        List<Vector2Int> path = Pathing.Find(start, end, tiles,
-            Pathing.Manhattan, TerrainCost);
+        // Define A* evaluation functions
+        HeuristicFunction heurFunc = TerrainCost;
+        DistanceFunction distFunc =
+            distanceType == Pathing.DistanceType.MANHATTAN ?
+            Pathing.Manhattan : Pathing.Euclidean;
+
+        // Compute best path between start & end based on eval functions (A*)
+        List <Vector2Int> path = Pathing.Find(start, end, tiles, distFunc, heurFunc);
 
         // Revert each tile to its type-based colour
         int rowCount = tiles.GetLength(0);
@@ -141,5 +156,38 @@ public class TileGrid : MonoBehaviour
             GameObject tile = grid[cell.y][cell.x];
             tile.GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            tileEditMode = TileEditMode.NONE;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            tileEditMode = TileEditMode.START;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            tileEditMode = TileEditMode.END;
+        }
+
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int mouseCell = Pathing.WorldToGrid(mouse, tiles);
+        switch (tileEditMode)
+        {
+            case TileEditMode.START:
+                start = mouseCell;
+                break;
+
+            case TileEditMode.END:
+                end = mouseCell;
+                break;
+        }
+
+        Color startColor = tileEditMode == TileEditMode.START ? Color.cyan : Color.white;
+        Color endColor = tileEditMode == TileEditMode.END ? Color.cyan : Color.black;
+        grid[start.y][start.x].GetComponent<SpriteRenderer>().color = startColor;
+        grid[end.y][end.x].GetComponent<SpriteRenderer>().color = endColor;
     }
 }
