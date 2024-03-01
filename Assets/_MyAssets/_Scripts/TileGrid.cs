@@ -18,6 +18,7 @@ public class TileGrid : MonoBehaviour
     List<List<GameObject>> grid = new List<List<GameObject>>();
 
     [SerializeField] Vector2Int start;
+    [SerializeField] Vector2Int end;
     [SerializeField] int stepCount;
 
     // Tile types (dictates the properties of each tile)
@@ -105,11 +106,15 @@ public class TileGrid : MonoBehaviour
         }
 
         // Flood-fill in purple
-        List<Vector2Int> cells = Pathing.FloodFill(start, tiles, stepCount);
+        List<Vector2Int> cells = Pathing.Find(start, end, tiles, stepCount);
         foreach (Vector2Int cell in cells)
         {
             GameObject tile = grid[cell.y][cell.x];
             tile.GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
         }
+
+        
+        grid[start.y][start.x].GetComponent<SpriteRenderer>().color = Color.cyan;
+        grid[end.y][end.x].GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 }
