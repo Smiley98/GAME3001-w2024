@@ -7,7 +7,7 @@ using Cell = UnityEngine.Vector2Int;
 
 public static class Pathing
 {
-    public static List<Cell> FloodFill(Cell start, int[,] tiles, int stepCount)
+    public static List<Cell> FloodFill(Cell start, Cell goal, int[,] tiles, int stepCount)
     {
         int rows = tiles.GetLength(0);
         int cols = tiles.GetLength(1);
@@ -15,18 +15,21 @@ public static class Pathing
         Queue<Cell> openList = new Queue<Cell>();   // "frontier"
         openList.Enqueue(start);
 
-        // Impassible terrain solution 1: pre-mark all impassible tiles as visited
-        //for (int row = 0; row < rows; row++)
-        //{
-        //    for (int col = 0; col < cols; col++)
-        //    {
-        //        //if (tiles[row, col] == (int)TileType.STONE)
-        //        //    closedList[row, col] = true;
-        //
-        //        // Shorter version of the above
-        //        closedList[row, col] = tiles[row, col] == (int)TileType.STONE;
-        //    }
-        //}
+        Node[,] nodes = new Node[rows, cols];
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+                nodes[row, col] = new Node();
+                nodes[row, col].cell = new Cell { y = row, x = col };   // Position cell on grid
+                nodes[row, col].parent = Node.Invalid();                // Indicate cell has no parent by default
+
+                // Impassible terrain solution 1: pre-mark all impassible tiles as visited
+                closedList[row, col] = tiles[row, col] == (int)TileType.STONE;
+            }
+        }
+
+        bool found = false;
 
         // Explore the frontier, add each unique cell to the list
         List<Cell> cells = new List<Cell>();
@@ -37,6 +40,13 @@ public static class Pathing
 
             // Get cell at the top of the frontier
             Cell current = openList.Dequeue();
+
+            // Stop exploring if we've reached our goal!
+            if (current == goal)
+            {
+                found = true;
+                break;
+            }
 
             // Prevent re-exploration of same cells (otherwise infinite loop)
             closedList[current.y, current.x] = true;
@@ -49,11 +59,31 @@ public static class Pathing
             {
                 // Impassible terrain solution 2: add impassible check directly into frontier condition
                 // "Only add to frontier if tile is unvisited & tile is not impassible (stone is impassible)"
-                if (!closedList[adjacent.y, adjacent.x] && tiles[adjacent.y, adjacent.x] != (int)TileType.STONE)
+                if (!closedList[adjacent.y, adjacent.x]/* && tiles[adjacent.y, adjacent.x] != (int)TileType.STONE*/)
+                {
                     openList.Enqueue(adjacent);
+                    nodes[adjacent.y, adjacent.x].parent = current;
+                }
             }
         }
 
+        // Return the path found by retracing our steps if there's a solution
+        if (found)
+        {
+            List<Cell> path = new List<Cell>();
+            Cell current = goal;
+            Cell next = nodes[current.y, current.x].parent;
+            while (next != Node.Invalid())
+            {
+                path.Add(current);
+                current = next;
+                next = nodes[next.y, next.x].parent;
+            }
+            path.Reverse();
+            return path;
+        }
+
+        // Otherwise return flood fill for visualization
         return cells;
     }
 
@@ -73,4 +103,13 @@ public static class Pathing
 
         return cells;
     }
+}
+
+public class Node
+{
+    public Cell cell;   // current cell
+    public Cell parent; // previous cell
+    
+    // Assign negative indices to indicate a cell is invalid
+    public static Cell Invalid() { return new Cell { x = -1, y = -1 }; }
 }

@@ -18,6 +18,7 @@ public class TileGrid : MonoBehaviour
     List<List<GameObject>> grid = new List<List<GameObject>>();
 
     [SerializeField] Vector2Int start;
+    [SerializeField] Vector2Int goal;
     [SerializeField] int stepCount;
 
     // Tile types (dictates the properties of each tile)
@@ -58,6 +59,10 @@ public class TileGrid : MonoBehaviour
             x = xStart;
             y -= 1.0f;
         }
+
+        //List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, 5);
+        //foreach (Vector2Int pathItem in path)
+        //    Debug.Log(pathItem);
     }
 
     // Type-based colour
@@ -105,7 +110,7 @@ public class TileGrid : MonoBehaviour
         }
 
         // Flood-fill in purple
-        List<Vector2Int> cells = Pathing.FloodFill(start, tiles, stepCount);
+        List<Vector2Int> cells = Pathing.FloodFill(start, goal, tiles, stepCount);
         foreach (Vector2Int cell in cells)
         {
             GameObject tile = grid[cell.y][cell.x];
