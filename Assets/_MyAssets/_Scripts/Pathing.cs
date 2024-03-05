@@ -11,8 +11,8 @@ public static class Pathing
     {
         int rows = tiles.GetLength(0);
         int cols = tiles.GetLength(1);
-        bool[,] closedList = new bool[rows, cols];
-        Queue<Cell> openList = new Queue<Cell>();
+        bool[,] closedList = new bool[rows, cols];  // "visited"
+        Queue<Cell> openList = new Queue<Cell>();   // "frontier"
         openList.Enqueue(start);
 
         // Explore the frontier, add each unique cell to the list
