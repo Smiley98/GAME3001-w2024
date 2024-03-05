@@ -109,9 +109,12 @@ public class TileGrid : MonoBehaviour
             }
         }
 
-        // Flood-fill in purple
-        List<Vector2Int> cells = Pathing.FloodFill(start, goal, tiles, stepCount);
-        foreach (Vector2Int cell in cells)
+        List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, stepCount);
+        // TODO -- write code to move an object along this path.
+        // See Connor's Lab 5.docx for additional details.
+
+        // Render floodfill/path in purple
+        foreach (Vector2Int cell in path)
         {
             GameObject tile = grid[cell.y][cell.x];
             tile.GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);

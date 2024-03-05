@@ -237,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2652050411793785358, guid: 50e76cd437d50c846bf87251b21d9084, type: 3}
   start: {x: 8, y: 4}
-  goal: {x: 8, y: 6}
+  goal: {x: 11, y: 6}
   stepCount: 1
 --- !u!1 &1843075386
 GameObject:
