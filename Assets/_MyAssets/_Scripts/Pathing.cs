@@ -15,6 +15,19 @@ public static class Pathing
         Queue<Cell> openList = new Queue<Cell>();   // "frontier"
         openList.Enqueue(start);
 
+        // Impassible terrain solution 1: pre-mark all impassible tiles as visited
+        //for (int row = 0; row < rows; row++)
+        //{
+        //    for (int col = 0; col < cols; col++)
+        //    {
+        //        //if (tiles[row, col] == (int)TileType.STONE)
+        //        //    closedList[row, col] = true;
+        //
+        //        // Shorter version of the above
+        //        closedList[row, col] = tiles[row, col] == (int)TileType.STONE;
+        //    }
+        //}
+
         // Explore the frontier, add each unique cell to the list
         List<Cell> cells = new List<Cell>();
         for (int i = 0; i < stepCount; i++)
@@ -34,7 +47,9 @@ public static class Pathing
             // Search adjacent cells, add them to the frontier if they haven't been explored
             foreach (Cell adjacent in Adjacents(current, rows, cols))
             {
-                if (!closedList[adjacent.y, adjacent.x])
+                // Impassible terrain solution 2: add impassible check directly into frontier condition
+                // "Only add to frontier if tile is unvisited & tile is not impassible (stone is impassible)"
+                if (!closedList[adjacent.y, adjacent.x] && tiles[adjacent.y, adjacent.x] != (int)TileType.STONE)
                     openList.Enqueue(adjacent);
             }
         }
