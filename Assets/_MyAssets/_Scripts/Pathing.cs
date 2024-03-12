@@ -119,6 +119,27 @@ public static class Pathing
     {
         return Cell.Distance(cell1, cell2);
     }
+
+    // Quantization
+    public static Cell WorldToGrid(Vector3 position, int[,] tiles)
+    {
+        int rows = tiles.GetLength(0);
+        int cols = tiles.GetLength(1);
+        Cell cell = new Cell((int)position.x, (rows - 1) - (int)position.y);
+        cell.x = Mathf.Clamp(cell.x, 0, cols - 1);
+        cell.y = Mathf.Clamp(cell.y, 0, rows - 1);
+        return cell;
+    }
+
+    // Localization
+    public static Vector3 GridToWorld(Cell cell, int[,] tiles)
+    {
+        int rows = tiles.GetLength(0);
+        int cols = tiles.GetLength(1);
+        cell.x = Mathf.Clamp(cell.x, 0, cols - 1);
+        cell.y = Mathf.Clamp((rows - 1) - cell.y, 0, rows - 1);
+        return new Vector3(cell.x + 0.5f, cell.y + 0.5f);
+    }
 }
 
 public class Node

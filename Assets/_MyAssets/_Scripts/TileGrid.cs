@@ -23,6 +23,8 @@ public class TileGrid : MonoBehaviour
     [SerializeField] Vector2Int goal;
     [SerializeField] int stepCount;
 
+    [SerializeField] Transform player;
+
     // Tile types (dictates the properties of each tile)
     int[,] tiles =
     {
@@ -105,9 +107,13 @@ public class TileGrid : MonoBehaviour
             }
         }
 
-        List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, stepCount);
-        // TODO -- write code to move an object along this path.
-        // See Connor's Lab 5.docx for additional details.
+        List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, 16);
+        Vector2Int current = path[0];
+        Vector2Int next = path[1];
+
+        Vector3 currentWorld = Pathing.GridToWorld(current, tiles);
+        Vector3 nextWorld = Pathing.GridToWorld(next, tiles);
+        player.position = Vector3.Lerp(currentWorld, nextWorld, Mathf.Sin(Time.realtimeSinceStartup) * 0.5f + 0.5f);
 
         // Render floodfill/path in purple
         foreach (Vector2Int cell in path)
