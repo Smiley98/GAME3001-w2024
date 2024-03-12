@@ -24,6 +24,9 @@ public class TileGrid : MonoBehaviour
     [SerializeField] int stepCount;
 
     [SerializeField] Transform player;
+    int currentIndex = 0;
+    int nextIndex = 1;
+    float t = 0.0f;
 
     // Tile types (dictates the properties of each tile)
     int[,] tiles =
@@ -108,12 +111,20 @@ public class TileGrid : MonoBehaviour
         }
 
         List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, 16);
-        Vector2Int current = path[0];
-        Vector2Int next = path[1];
+        Vector2Int current = path[currentIndex];
+        Vector2Int next = path[nextIndex];
 
         Vector3 currentWorld = Pathing.GridToWorld(current, tiles);
         Vector3 nextWorld = Pathing.GridToWorld(next, tiles);
-        player.position = Vector3.Lerp(currentWorld, nextWorld, Mathf.Sin(Time.realtimeSinceStartup) * 0.5f + 0.5f);
+        player.position = Vector3.Lerp(currentWorld, nextWorld, t);
+        t += Time.deltaTime;
+
+        if (Vector3.Distance(player.position, nextWorld) <= 0.01f && next != goal)
+        {
+            currentIndex++;
+            nextIndex++;
+            t = 0.0f;
+        }
 
         // Render floodfill/path in purple
         foreach (Vector2Int cell in path)
