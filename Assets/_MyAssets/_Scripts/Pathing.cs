@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 // y = row, x = column
 using Cell = UnityEngine.Vector2Int;
@@ -12,8 +13,9 @@ public static class Pathing
         int rows = tiles.GetLength(0);
         int cols = tiles.GetLength(1);
         bool[,] closedList = new bool[rows, cols];  // "visited"
-        Queue<Cell> openList = new Queue<Cell>();   // "frontier"
-        openList.Enqueue(start);
+        PriorityQueue<Cell, float> openList = new PriorityQueue<Cell, float>();
+        openList.Enqueue(start, 0.0f);
+        // The closer to 0, the higher the priority
 
         Node[,] nodes = new Node[rows, cols];
         for (int row = 0; row < rows; row++)
@@ -57,11 +59,13 @@ public static class Pathing
             // Search adjacent cells, add them to the frontier if they haven't been explored
             foreach (Cell adjacent in Adjacents(current, rows, cols))
             {
-                // Impassible terrain solution 2: add impassible check directly into frontier condition
-                // "Only add to frontier if tile is unvisited & tile is not impassible (stone is impassible)"
-                if (!closedList[adjacent.y, adjacent.x]/* && tiles[adjacent.y, adjacent.x] != (int)TileType.STONE*/)
+                if (!closedList[adjacent.y, adjacent.x])
                 {
-                    openList.Enqueue(adjacent);
+                    // For A*, you need to make your priority based on f(x) = g(x) + h(x)
+                    // We've coded h(x) as manhattan distance from adjacent to goal.
+                    // You may also want to associate terrain cost with h(x) [lab 4's homework]
+                    // g(x) should be distance from current to adjacent.
+                    openList.Enqueue(adjacent, Manhattan(adjacent, goal));
                     nodes[adjacent.y, adjacent.x].parent = current;
                 }
             }
@@ -96,20 +100,33 @@ public static class Pathing
         bool left = cell.x - 1 >= 0;
         bool right = cell.x + 1 < cols;
 
-        if (bot) cells.Add(new Cell(cell.x, cell.y - 1));
         if (top) cells.Add(new Cell(cell.x, cell.y + 1));
+        if (bot) cells.Add(new Cell(cell.x, cell.y - 1));
         if (left) cells.Add(new Cell(cell.x - 1, cell.y));
         if (right) cells.Add(new Cell(cell.x + 1, cell.y));
 
         return cells;
     }
+
+    // Prefers adjacent
+    public static float Manhattan(Cell cell1, Cell cell2)
+    {
+        return Mathf.Abs(cell1.x - cell2.x) + Mathf.Abs(cell1.y - cell2.y);
+    }
+
+    // Prefers diagonal
+    public static float Euclidean(Cell cell1, Cell cell2)
+    {
+        return Cell.Distance(cell1, cell2);
+    }
 }
 
 public class Node
 {
+    // For A*, include g & h values
     public Cell cell;   // current cell
     public Cell parent; // previous cell
-    
+
     // Assign negative indices to indicate a cell is invalid
     public static Cell Invalid() { return new Cell { x = -1, y = -1 }; }
 }

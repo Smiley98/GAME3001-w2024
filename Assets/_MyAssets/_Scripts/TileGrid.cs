@@ -115,5 +115,10 @@ public class TileGrid : MonoBehaviour
             GameObject tile = grid[cell.y][cell.x];
             tile.GetComponent<SpriteRenderer>().color = TileColor(TileType.INVALID);
         }
+
+        GameObject startTile = grid[start.y][start.x];
+        GameObject goalTile = grid[goal.y][goal.x];
+        startTile.GetComponent<SpriteRenderer>().color = Color.red;
+        goalTile.GetComponent<SpriteRenderer>().color = Color.cyan;
     }
 }
