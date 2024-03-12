@@ -68,30 +68,13 @@ public class TileGrid : MonoBehaviour
     // Type-based colour
     Color TileColor(TileType type)
     {
-        Color color = Color.white;
-        switch (type)
+        Color invalid = Color.magenta;
+        if (type != TileType.INVALID)
         {
-            case TileType.GRASS:
-                color = Color.green;
-                break;
-
-            case TileType.WATER:
-                color = Color.blue;
-                break;
-
-            case TileType.MUD:
-                color = Color.red;
-                break;
-
-            case TileType.STONE:
-                color = Color.grey;
-                break;
-
-            case TileType.INVALID:
-                color = Color.magenta;
-                break;
+            Color[] colors = { Color.green, Color.blue, Color.red, Color.grey };
+            return colors[(int)type];
         }
-        return color;
+        return invalid;
     }
 
     void Update()
