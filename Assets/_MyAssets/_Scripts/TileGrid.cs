@@ -154,15 +154,22 @@ public class TileGrid : MonoBehaviour
             }
         }
 
-        Vector3 toPlayer = (Vector3.zero - viewer.position).normalized;
-        bool hit = Physics2D.Raycast(viewer.position, toPlayer, 1000.0f);
-        Color hitColor = hit ? Color.green : Color.red;
+        // Colors ray & player green if viewer can see player, otherwise red
+        Vector3 toPlayer = (player.position - viewer.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(viewer.position, toPlayer, 1000.0f);
+        bool playerHit = hit && hit.collider.CompareTag("Player");
+        Color hitColor = playerHit ? Color.green : Color.red;
         playerOutline.GetComponent<SpriteRenderer>().color = hitColor;
         Debug.DrawLine(viewer.position, viewer.position + toPlayer * 1000.0f, hitColor);
 
+        // Figure out the cells that the player & viewer are in
         Vector2Int playerCell = Pathing.WorldToGrid(player.position, tiles);
         Vector2Int viewerCell = Pathing.WorldToGrid(viewer.position, tiles);
         grid[playerCell.y][playerCell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
         grid[viewerCell.y][viewerCell.x].GetComponent<SpriteRenderer>().color = Color.cyan;
+
+        // Homework: colour tiles green if the player is visible from them, otherwise red
+        // Hint: You need to loop through all tiles (similar to above where each tile is coloured white),
+        // and then tailor the above line of sight test to your tiles loop!
     }
 }
