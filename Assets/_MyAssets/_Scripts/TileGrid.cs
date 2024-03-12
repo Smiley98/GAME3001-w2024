@@ -24,6 +24,7 @@ public class TileGrid : MonoBehaviour
     [SerializeField] int stepCount;
 
     [SerializeField] Transform player;
+    [SerializeField] Transform viewer;
     int currentIndex = 0;
     int nextIndex = 1;
     float t = 0.0f;
@@ -95,7 +96,7 @@ public class TileGrid : MonoBehaviour
         return invalid;
     }
 
-    void Update()
+    void FollowPath()
     {
         // Revert each tile to its type-based colour
         int rowCount = tiles.GetLength(0);
@@ -137,5 +138,26 @@ public class TileGrid : MonoBehaviour
         GameObject goalTile = grid[goal.y][goal.x];
         startTile.GetComponent<SpriteRenderer>().color = Color.red;
         goalTile.GetComponent<SpriteRenderer>().color = Color.cyan;
+    }
+
+    void Update()
+    {
+        // Revert each tile to white
+        int rowCount = tiles.GetLength(0);
+        int colCount = tiles.GetLength(1);
+        for (int row = 0; row < rowCount; row++)
+        {
+            for (int col = 0; col < colCount; col++)
+            {
+                grid[row][col].GetComponent<SpriteRenderer>().color = Color.white;
+            }
+        }
+
+        Vector2Int playerCell = Pathing.WorldToGrid(player.position, tiles);
+        Vector2Int viewerCell = Pathing.WorldToGrid(viewer.position, tiles);
+        grid[playerCell.y][playerCell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+        grid[viewerCell.y][viewerCell.x].GetComponent<SpriteRenderer>().color = Color.cyan;
+
+
     }
 }
