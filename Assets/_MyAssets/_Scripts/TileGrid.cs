@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
+using Utils;
 
 public enum TileType : int
 {
@@ -63,6 +65,17 @@ public class TileGrid : MonoBehaviour
         //List<Vector2Int> path = Pathing.FloodFill(start, goal, tiles, 5);
         //foreach (Vector2Int pathItem in path)
         //    Debug.Log(pathItem);
+
+        PriorityQueue<Vector2Int, float> pq = new PriorityQueue<Vector2Int, float>();
+        pq.Enqueue(new Vector2Int(1, 1), 3.0f);
+        pq.Enqueue(new Vector2Int(2, 2), 2.0f);
+        pq.Enqueue(new Vector2Int(3, 3), 1.0f);
+
+        while (pq.Count > 0)
+        {
+            Vector2Int cell = pq.Dequeue();
+            Debug.Log(cell);
+        }
     }
 
     // Type-based colour
