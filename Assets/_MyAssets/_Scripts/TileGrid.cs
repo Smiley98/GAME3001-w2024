@@ -23,6 +23,7 @@ public class TileGrid : MonoBehaviour
     [SerializeField] Vector2Int goal;
     [SerializeField] int stepCount;
 
+    [SerializeField] GameObject playerOutline;
     [SerializeField] Transform player;
     [SerializeField] Transform viewer;
     int currentIndex = 0;
@@ -153,11 +154,15 @@ public class TileGrid : MonoBehaviour
             }
         }
 
+        Vector3 toPlayer = (Vector3.zero - viewer.position).normalized;
+        bool hit = Physics2D.Raycast(viewer.position, toPlayer, 1000.0f);
+        Color hitColor = hit ? Color.green : Color.red;
+        playerOutline.GetComponent<SpriteRenderer>().color = hitColor;
+        Debug.DrawLine(viewer.position, viewer.position + toPlayer * 1000.0f, hitColor);
+
         Vector2Int playerCell = Pathing.WorldToGrid(player.position, tiles);
         Vector2Int viewerCell = Pathing.WorldToGrid(viewer.position, tiles);
         grid[playerCell.y][playerCell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
         grid[viewerCell.y][viewerCell.x].GetComponent<SpriteRenderer>().color = Color.cyan;
-
-
     }
 }
