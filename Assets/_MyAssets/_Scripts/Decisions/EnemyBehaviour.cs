@@ -14,22 +14,27 @@ public class EnemyBehaviour : MonoBehaviour
     ActionNode meleeAction = new MeleeAttackAction();
     ActionNode rangedAction = new RangedAttackAction();
 
+    ColorAction redColorAction = new ColorAction();
+    ColorAction greenColorAction = new ColorAction();
+
     void Start()
     {
         farDistance.agent = gameObject;
         farDistance.target = player;
-
         farDistance.distance = 7.5f;
-        nearDistance.distance = 2.5f;
+        
+        redColorAction.agent = gameObject;
+        redColorAction.color = Color.red;
+        
+        redColorAction.agent = gameObject;
+        redColorAction.color = Color.green;
 
-        ColorAction colorAction = new ColorAction();
-        colorAction.agent = gameObject;
-        colorAction.color = Color.red;
-        colorAction.Evaluate();
+        farDistance.yes = greenColorAction;
+        farDistance.no = redColorAction;
     }
 
     void Update()
     {
-        
+        TreeNode.Traverse(farDistance);
     }
 }
