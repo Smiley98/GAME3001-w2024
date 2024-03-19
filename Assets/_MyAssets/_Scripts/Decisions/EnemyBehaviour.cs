@@ -6,13 +6,13 @@ public class EnemyBehaviour : MonoBehaviour
 {
     public GameObject player;
 
-    VisibleNode visible = new VisibleNode();
     DistanceNode farDistance = new DistanceNode();
-    DistanceNode nearDistance = new DistanceNode();
-
-    ActionNode nullAction = new ActionNode();
-    ActionNode meleeAction = new MeleeAttackAction();
-    ActionNode rangedAction = new RangedAttackAction();
+    //VisibleNode visible = new VisibleNode();
+    //DistanceNode nearDistance = new DistanceNode();
+    //
+    //ActionNode nullAction = new ActionNode();
+    //ActionNode meleeAction = new MeleeAttackAction();
+    //ActionNode rangedAction = new RangedAttackAction();
 
     ColorAction redColorAction = new ColorAction();
     ColorAction greenColorAction = new ColorAction();
@@ -25,9 +25,9 @@ public class EnemyBehaviour : MonoBehaviour
         
         redColorAction.agent = gameObject;
         redColorAction.color = Color.red;
-        
-        redColorAction.agent = gameObject;
-        redColorAction.color = Color.green;
+
+        greenColorAction.agent = gameObject;
+        greenColorAction.color = Color.green;
 
         farDistance.yes = greenColorAction;
         farDistance.no = redColorAction;
