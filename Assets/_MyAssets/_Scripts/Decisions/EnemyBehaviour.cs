@@ -53,9 +53,9 @@ public class EnemyBehaviour : MonoBehaviour
         if (collision.CompareTag("Waypoint"))
         {
             nextWaypoint++;
-            if (nextWaypoint >= waypoints.Length) nextWaypoint = 0;
-
-
+            //if (nextWaypoint >= waypoints.Length) nextWaypoint = 0;
+            //nextWaypoint = nextWaypoint >= waypoints.Length ? 0 : nextWaypoint;
+            nextWaypoint %= waypoints.Length;
         }
     }
 }
