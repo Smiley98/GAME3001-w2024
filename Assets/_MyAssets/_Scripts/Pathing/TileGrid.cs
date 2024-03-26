@@ -26,6 +26,10 @@ public class TileGrid : MonoBehaviour
     [SerializeField] GameObject playerOutline;
     [SerializeField] Transform player;
     [SerializeField] Transform viewer;
+    [SerializeField] GameObject obstacle;
+
+    [SerializeField] [Range(0.0f, 25.0f)] float distance;
+
     int currentIndex = 0;
     int nextIndex = 1;
     float t = 0.0f;
@@ -141,6 +145,16 @@ public class TileGrid : MonoBehaviour
         goalTile.GetComponent<SpriteRenderer>().color = Color.cyan;
     }
 
+    bool IsVisbile(Vector3 viewer, Vector3 target, GameObject obstacle, float distance)
+    {
+        // AB = B - A
+        Vector3 direction = (target - viewer).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(viewer, direction, distance);
+        bool obstacleHit = hit.collider && hit.collider.CompareTag(obstacle.tag);
+        return !obstacleHit;
+        //return Physics2D.Raycast(viewer, direction, distance);
+    }
+
     void Update()
     {
         // Revert each tile to white
@@ -150,23 +164,25 @@ public class TileGrid : MonoBehaviour
         {
             for (int col = 0; col < colCount; col++)
             {
-                grid[row][col].GetComponent<SpriteRenderer>().color = Color.white;
+                GameObject tile = grid[row][col];
+                bool visible = IsVisbile(tile.transform.position, player.position, obstacle, distance);
+                tile.GetComponent<SpriteRenderer>().color = visible ? Color.green : Color.red;
             }
         }
 
         // Colors ray & player green if viewer can see player, otherwise red
-        Vector3 toPlayer = (player.position - viewer.position).normalized;
-        RaycastHit2D hit = Physics2D.Raycast(viewer.position, toPlayer, 1000.0f);
-        bool playerHit = hit && hit.collider.CompareTag("Player");
-        Color hitColor = playerHit ? Color.green : Color.red;
-        playerOutline.GetComponent<SpriteRenderer>().color = hitColor;
-        Debug.DrawLine(viewer.position, viewer.position + toPlayer * 1000.0f, hitColor);
+        //Vector3 toPlayer = (player.position - viewer.position).normalized;
+        //RaycastHit2D hit = Physics2D.Raycast(viewer.position, toPlayer, 1000.0f);
+        //bool playerHit = hit && hit.collider.CompareTag("Player");
+        //Color hitColor = playerHit ? Color.green : Color.red;
+        //playerOutline.GetComponent<SpriteRenderer>().color = hitColor;
+        //Debug.DrawLine(viewer.position, viewer.position + toPlayer * 1000.0f, hitColor);
 
         // Figure out the cells that the player & viewer are in
-        Vector2Int playerCell = Pathing.WorldToGrid(player.position, tiles);
-        Vector2Int viewerCell = Pathing.WorldToGrid(viewer.position, tiles);
-        grid[playerCell.y][playerCell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
-        grid[viewerCell.y][viewerCell.x].GetComponent<SpriteRenderer>().color = Color.cyan;
+        //Vector2Int playerCell = Pathing.WorldToGrid(player.position, tiles);
+        //Vector2Int viewerCell = Pathing.WorldToGrid(viewer.position, tiles);
+        //grid[playerCell.y][playerCell.x].GetComponent<SpriteRenderer>().color = Color.magenta;
+        //grid[viewerCell.y][viewerCell.x].GetComponent<SpriteRenderer>().color = Color.cyan;
 
         // Homework: colour tiles green if the player is visible from them, otherwise red
         // Hint: You need to loop through all tiles (similar to above where each tile is coloured white),
