@@ -54,7 +54,6 @@ public class VisibleNode : DecisionNode
 
 public class VisibleNode2 : DecisionNode
 {
-    //public GameObject obstacle;
     public float distance;
 
     public override TreeNode Evaluate()
@@ -65,12 +64,37 @@ public class VisibleNode2 : DecisionNode
         // AB = B - A
         Vector3 direction = (to - from).normalized;
 
-        // TODO -- fix using layer mask instead of offset
-        RaycastHit2D hit = Physics2D.Raycast(from + direction * 1.5f, direction, distance);
+        // Unity built-in raycast layers:
+        // 0 = Default
+        // 1 = Transparent
+        // 2 = Ignore Raycast
+        // 3 = ???
+        // 4 = Water
+        // 5 = UI
+
+        // Unity has 32 possible layers becuase there are 32 bits in a (4 byte, default) integer
+        // Hence, we must bit-shift in order to determine which layer to ignore.
+        // We work in multiples of 2. Consider the first (right-most) 8 bits:
+        // (We must start with the right-most bit [1's column] as 1 otherwise its like multiplying by 0)
+        // 0 0 0 0 0 0 0 1
+        // 1 << 0 = 1   ---> 0 0 0 0 0 0 0 1
+        // 1 << 1 = 2   ---> 0 0 0 0 0 0 1 0
+        // 1 << 2 = 4   ---> 0 0 0 0 0 1 0 0
+        // 1 << 3 = 8   ---> 0 0 0 0 1 0 0 0
+
+        // In this context, 0 means ignore, 1 means don't ignore.
+        // The Ignore Raycast has a value of 2 meaning it corresponds to the 2nd bit.
+        // Hence, we take 1, shift it left twice, then negate it to ignore every bit except bit 2.
+        //int layerIndex = LayerMask.NameToLayer("Ignore Raycast");
+        //int layerMask = 1 << layerIndex;
+        //layerMask = ~layerMask;
+        // Expressed in one line (assuming agent.layer == Ignore Raycast):
+
+        int layerMask = ~(1 << agent.layer);
+        RaycastHit2D hit = Physics2D.Raycast(from, direction, distance, layerMask);
 
         bool targetHit = hit.collider && hit.collider.CompareTag(target.tag);
         return targetHit ? yes : no;
-        //return isVisible ? yes : no;
     }
 }
 

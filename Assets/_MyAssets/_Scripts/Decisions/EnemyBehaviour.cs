@@ -14,7 +14,6 @@ public class EnemyBehaviour : MonoBehaviour
     // Game world variables
     public Transform[] waypoints;
     int nextWaypoint = 0;
-    //public GameObject obstacle;
 
     DistanceNode farDistance = new DistanceNode();
     VisibleNode2 visible2 = new VisibleNode2();
@@ -54,7 +53,6 @@ public class EnemyBehaviour : MonoBehaviour
         visible2.target = player;
 
         visible2.distance = viewDistance;
-        //visible2.obstacle = obstacle;
 
         visible2.yes = greenColorAction;
         visible2.no = redColorAction;
