@@ -5,6 +5,11 @@ using UnityEngine;
 public class EnemyBehaviour : MonoBehaviour
 {
     public GameObject player;
+    public Transform[] waypoints;
+    int nextWaypoint = 0;
+
+    // 10 units per second
+    float speed = 10.0f;
 
     DistanceNode farDistance = new DistanceNode();
     //VisibleNode visible = new VisibleNode();
@@ -35,6 +40,19 @@ public class EnemyBehaviour : MonoBehaviour
 
     void Update()
     {
+        float dt = Time.deltaTime;
         TreeNode.Traverse(farDistance);
+
+        Vector3 enemyPosition = transform.position;
+        Vector3 targetPosition = waypoints[nextWaypoint].position;
+        transform.position = Vector3.MoveTowards(enemyPosition, targetPosition, speed * dt);
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Waypoint"))
+        {
+            nextWaypoint++;
+        }
     }
 }
