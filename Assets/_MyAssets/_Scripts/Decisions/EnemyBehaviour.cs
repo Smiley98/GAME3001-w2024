@@ -22,6 +22,8 @@ public class EnemyBehaviour : MonoBehaviour
     ColorAction redColorAction = new ColorAction();
     ColorAction greenColorAction = new ColorAction();
 
+    PatrolAction patrolAction = new PatrolAction();
+
     void Start()
     {
         farDistance.agent = gameObject;
@@ -36,6 +38,11 @@ public class EnemyBehaviour : MonoBehaviour
 
         farDistance.yes = greenColorAction;
         farDistance.no = redColorAction;
+
+        greenColorAction.next = redColorAction.next = patrolAction;
+        patrolAction.agent = gameObject;
+        patrolAction.waypoints = waypoints;
+        patrolAction.speed = speed;
     }
 
     void Update()
@@ -43,9 +50,9 @@ public class EnemyBehaviour : MonoBehaviour
         float dt = Time.deltaTime;
         TreeNode.Traverse(farDistance);
 
-        Vector3 enemyPosition = transform.position;
-        Vector3 targetPosition = waypoints[nextWaypoint].position;
-        transform.position = Vector3.MoveTowards(enemyPosition, targetPosition, speed * dt);
+        //Vector3 enemyPosition = transform.position;
+        //Vector3 targetPosition = waypoints[nextWaypoint].position;
+        //transform.position = Vector3.MoveTowards(enemyPosition, targetPosition, speed * dt);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -53,9 +60,8 @@ public class EnemyBehaviour : MonoBehaviour
         if (collision.CompareTag("Waypoint"))
         {
             nextWaypoint++;
-            //if (nextWaypoint >= waypoints.Length) nextWaypoint = 0;
-            //nextWaypoint = nextWaypoint >= waypoints.Length ? 0 : nextWaypoint;
             nextWaypoint %= waypoints.Length;
+            patrolAction.nextWaypoint = nextWaypoint;
         }
     }
 }

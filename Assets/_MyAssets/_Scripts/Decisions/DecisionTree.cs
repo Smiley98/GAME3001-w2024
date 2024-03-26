@@ -33,9 +33,11 @@ public abstract class DecisionNode : TreeNode
 // Actions are "leaf" nodes, meaning they're the bottom of the tree
 public class ActionNode : TreeNode
 {
+    public ActionNode next = null;
+
     public override TreeNode Evaluate()
     {
-        return null;
+        return next;
     }
 }
 
@@ -108,6 +110,21 @@ public class ColorAction : ActionNode
     public override TreeNode Evaluate()
     {
         agent.GetComponent<SpriteRenderer>().color = color;
+        return base.Evaluate();
+    }
+}
+
+public class PatrolAction : ActionNode
+{
+    public Transform[] waypoints;
+    public int nextWaypoint = 0;
+    public float speed;
+
+    public override TreeNode Evaluate()
+    {
+        Vector3 enemyPosition = agent.transform.position;
+        Vector3 targetPosition = waypoints[nextWaypoint].position;
+        agent.transform.position = Vector3.MoveTowards(enemyPosition, targetPosition, speed * Time.deltaTime);
         return base.Evaluate();
     }
 }
