@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
 {
+    // Player variables
     public GameObject player;
-    public Transform[] waypoints;
-    int nextWaypoint = 0;
+    [Range(0.0f, 25.0f)] public float viewDistance;
 
-    // 10 units per second
+    // Enemy variables
     float speed = 10.0f;
 
+    // Game world variables
+    public Transform[] waypoints;
+    int nextWaypoint = 0;
+    //public GameObject obstacle;
+
     DistanceNode farDistance = new DistanceNode();
+    VisibleNode2 visible2 = new VisibleNode2();
     //VisibleNode visible = new VisibleNode();
     //DistanceNode nearDistance = new DistanceNode();
     //
@@ -39,20 +45,26 @@ public class EnemyBehaviour : MonoBehaviour
         farDistance.yes = greenColorAction;
         farDistance.no = redColorAction;
 
-        greenColorAction.next = redColorAction.next = patrolAction;
+        //greenColorAction.next = redColorAction.next = patrolAction;
         patrolAction.agent = gameObject;
         patrolAction.waypoints = waypoints;
         patrolAction.speed = speed;
+
+        visible2.agent = gameObject;
+        visible2.target = player;
+
+        visible2.distance = viewDistance;
+        //visible2.obstacle = obstacle;
+
+        visible2.yes = greenColorAction;
+        visible2.no = redColorAction;
     }
 
     void Update()
     {
         float dt = Time.deltaTime;
-        TreeNode.Traverse(farDistance);
-
-        //Vector3 enemyPosition = transform.position;
-        //Vector3 targetPosition = waypoints[nextWaypoint].position;
-        //transform.position = Vector3.MoveTowards(enemyPosition, targetPosition, speed * dt);
+        //TreeNode.Traverse(farDistance);
+        TreeNode.Traverse(visible2);
     }
 
     void OnTriggerEnter2D(Collider2D collision)

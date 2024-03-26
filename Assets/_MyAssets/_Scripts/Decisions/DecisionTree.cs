@@ -52,6 +52,28 @@ public class VisibleNode : DecisionNode
     }
 }
 
+public class VisibleNode2 : DecisionNode
+{
+    //public GameObject obstacle;
+    public float distance;
+
+    public override TreeNode Evaluate()
+    {
+        Vector3 from = agent.transform.position;
+        Vector3 to = target.transform.position;
+
+        // AB = B - A
+        Vector3 direction = (to - from).normalized;
+
+        // TODO -- fix using layer mask instead of offset
+        RaycastHit2D hit = Physics2D.Raycast(from + direction * 1.5f, direction, distance);
+
+        bool targetHit = hit.collider && hit.collider.CompareTag(target.tag);
+        return targetHit ? yes : no;
+        //return isVisible ? yes : no;
+    }
+}
+
 // Whether the target is within the desired distance of the agent
 public class DistanceNode : DecisionNode
 {
