@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
 {
+    public GameObject projectilePrefab;
+
     // Player variables
     public GameObject player;
 
@@ -33,16 +33,16 @@ public class EnemyBehaviour : MonoBehaviour
     MoveToVisibleAction moveToVisibleAction = new MoveToVisibleAction();
     MoveToTargetAction moveToTargetAction = new MoveToTargetAction();
 
-    ActionNode nearAttackAction = new NearAttackAction();
-    ActionNode farAttackAction = new FarAttackAction();
+    NearAttackAction nearAttackAction = new NearAttackAction();
+    FarAttackAction farAttackAction = new FarAttackAction();
 
     void Start()
     {
         // 1. Assign data to nodes
         farDistance.agent = nearDistance.agent = gameObject;
         farDistance.target = nearDistance.target = player;
-        farDistance.distance = 7.5f;
-        nearDistance.distance = 2.5f;
+        farDistance.distance = 7.0f;
+        nearDistance.distance = 3.5f;
 
         visible.agent = gameObject;
         visible.target = player;
@@ -60,6 +60,10 @@ public class EnemyBehaviour : MonoBehaviour
         moveToTargetAction.target = player;
         moveToTargetAction.speed = speed;
 
+        nearAttackAction.agent = gameObject;
+        nearAttackAction.target = player;
+        nearAttackAction.projectilePrefab = projectilePrefab;
+
         // 2. Build decision tree
         farDistance.no = patrolAction;
         farDistance.yes = visible;
@@ -67,6 +71,10 @@ public class EnemyBehaviour : MonoBehaviour
         visible.yes = nearDistance;
         nearDistance.no = moveToTargetAction;
         nearDistance.yes = nearAttackAction;
+
+        // Homework: make a ranged combat enemy that follows a similar decision tree to this one
+        // (see Week 12 Lab 7 ranged enemy tree.png for an example).
+        // Ensure the ranged enemy can find cover and wait behind covers.
     }
 
     void Update()

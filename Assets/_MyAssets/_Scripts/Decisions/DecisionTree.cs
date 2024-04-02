@@ -1,8 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // Base class for all actions & decisions
@@ -35,7 +32,7 @@ public abstract class TreeNode
 }
 
 // Decision nodes return yes or no ("branch" nodes)
-[Serializable]
+[System.Serializable]
 public abstract class DecisionNode : TreeNode
 {
     public TreeNode yes = null;
@@ -184,9 +181,36 @@ public class MoveToVisibleAction : ActionNode
 // Close attack
 public class NearAttackAction : ActionNode
 {
+    public GameObject projectilePrefab;
+
+    public float cooldown = 0.5f;
+    float time = 0.0f;
+
     public override TreeNode Evaluate()
     {
-        Debug.Log("Attacking");
+        float dt = Time.deltaTime;
+        if (time >= cooldown)
+        {
+            // Fire projectile then reset timer if off cooldown
+            time = 0.0f;
+
+            Vector3 from = agent.transform.position;
+            Vector3 to = target.transform.position;
+            Vector3 direction = (to - from).normalized;
+            Vector3 left = Quaternion.Euler(0.0f, 0.0f, 30.0f) * direction;
+            Vector3 right = Quaternion.Euler(0.0f, 0.0f, -30.0f) * direction;
+
+            GameObject centre = Object.Instantiate(projectilePrefab);
+            GameObject top = Object.Instantiate(projectilePrefab);
+            GameObject bot = Object.Instantiate(projectilePrefab);
+            centre.transform.position = from + direction;
+            top.transform.position = from + left;
+            bot.transform.position = from + right;
+            centre.GetComponent<Rigidbody2D>().velocity = direction * 2.0f;
+            top.GetComponent<Rigidbody2D>().velocity = left * 2.0f;
+            bot.GetComponent<Rigidbody2D>().velocity = right * 2.0f;
+        }
+        time += dt;
         return base.Evaluate();
     }
 }
@@ -194,9 +218,11 @@ public class NearAttackAction : ActionNode
 // Far attack
 public class FarAttackAction : ActionNode
 {
+    public GameObject projectilePrefab;
+
     public override TreeNode Evaluate()
     {
-        Debug.Log("Attacking");
+        // Consider making a sniper rifle that shoots a single bullet really fast here
         return base.Evaluate();
     }
 }
