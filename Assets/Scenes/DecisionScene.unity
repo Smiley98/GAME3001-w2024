@@ -176,6 +176,10 @@ PrefabInstance:
       value: BotRight
       objectReference: {fileID: 0}
     - target: {fileID: 7079966718748544076, guid: cbe61452dbb38bb46ad8488bd353e802, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7079966718748544076, guid: cbe61452dbb38bb46ad8488bd353e802, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}

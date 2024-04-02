@@ -27,6 +27,7 @@ public class EnemyBehaviour : MonoBehaviour
     ColorAction greenColorAction = new ColorAction();
 
     PatrolAction patrolAction = new PatrolAction();
+    MoveToVisibleAction moveToVisibleAction = new MoveToVisibleAction();
 
     void Start()
     {
@@ -43,10 +44,17 @@ public class EnemyBehaviour : MonoBehaviour
         farDistance.yes = greenColorAction;
         farDistance.no = redColorAction;
 
+        moveToVisibleAction.agent = gameObject;
+        moveToVisibleAction.target = player;
+        moveToVisibleAction.speed = speed;
+        moveToVisibleAction.waypoints = waypoints;
+
         greenColorAction.next = redColorAction.next = patrolAction;
         patrolAction.agent = gameObject;
         patrolAction.waypoints = waypoints;
         patrolAction.speed = speed;
+
+        patrolAction.next = moveToVisibleAction;
 
         visible.agent = gameObject;
         visible.target = player;

@@ -156,7 +156,11 @@ public class MoveToVisibleAction : ActionNode
 
     public override TreeNode Evaluate()
     {
-
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            Color color = IsPlayerVisible(waypoints[i].transform.position) ? Color.green : Color.red;
+            waypoints[i].GetComponent<SpriteRenderer>().color = color;
+        }
 
         return base.Evaluate();
     }
