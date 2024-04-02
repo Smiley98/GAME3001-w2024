@@ -16,8 +16,7 @@ public class EnemyBehaviour : MonoBehaviour
     int nextWaypoint = 0;
 
     DistanceNode farDistance = new DistanceNode();
-    VisibleNode2 visible2 = new VisibleNode2();
-    //VisibleNode visible = new VisibleNode();
+    VisibleNode visible = new VisibleNode();
     //DistanceNode nearDistance = new DistanceNode();
     //
     //ActionNode nullAction = new ActionNode();
@@ -44,25 +43,25 @@ public class EnemyBehaviour : MonoBehaviour
         farDistance.yes = greenColorAction;
         farDistance.no = redColorAction;
 
-        //greenColorAction.next = redColorAction.next = patrolAction;
+        greenColorAction.next = redColorAction.next = patrolAction;
         patrolAction.agent = gameObject;
         patrolAction.waypoints = waypoints;
         patrolAction.speed = speed;
 
-        visible2.agent = gameObject;
-        visible2.target = player;
+        visible.agent = gameObject;
+        visible.target = player;
 
-        visible2.distance = viewDistance;
+        visible.distance = viewDistance;
 
-        visible2.yes = greenColorAction;
-        visible2.no = redColorAction;
+        visible.yes = greenColorAction;
+        visible.no = redColorAction;
     }
 
     void Update()
     {
         float dt = Time.deltaTime;
         //TreeNode.Traverse(farDistance);
-        TreeNode.Traverse(visible2);
+        TreeNode.Traverse(visible);
     }
 
     void OnTriggerEnter2D(Collider2D collision)

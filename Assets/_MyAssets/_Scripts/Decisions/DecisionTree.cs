@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // Base class for all actions & decisions
@@ -19,6 +20,16 @@ public abstract class TreeNode
         {
             Traverse(node.Evaluate());
         }
+    }
+
+    // Tests if there's a line of sight from view position to player
+    protected bool IsPlayerVisible(Vector3 viewPosition, float viewDistance = float.PositiveInfinity)
+    {
+        // Both the Enemy and Waypoints are on layer 2 which is "Ignore Raycast"
+        int layerMask = ~(1 << 2);
+        Vector3 direction = (target.transform.position - viewPosition).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(viewPosition, direction, viewDistance, layerMask);
+        return hit.collider && hit.collider.CompareTag(target.tag);
     }
 }
 
@@ -42,28 +53,22 @@ public class ActionNode : TreeNode
 }
 
 // Whether or not we have line of sight
+//public class VisibleNode : DecisionNode
+//{
+//    public bool isVisible;
+//
+//    public override TreeNode Evaluate()
+//    {
+//        return isVisible ? yes : no;
+//    }
+//}
+
 public class VisibleNode : DecisionNode
-{
-    public bool isVisible;
-
-    public override TreeNode Evaluate()
-    {
-        return isVisible ? yes : no;
-    }
-}
-
-public class VisibleNode2 : DecisionNode
 {
     public float distance;
 
     public override TreeNode Evaluate()
     {
-        Vector3 from = agent.transform.position;
-        Vector3 to = target.transform.position;
-
-        // AB = B - A
-        Vector3 direction = (to - from).normalized;
-
         // Unity built-in raycast layers:
         // 0 = Default
         // 1 = Transparent
@@ -71,6 +76,22 @@ public class VisibleNode2 : DecisionNode
         // 3 = ???
         // 4 = Water
         // 5 = UI
+
+        // Decimal number system is how must (non-programmer) humans count
+        // Called "base 10" because there's 10 digits -- 0 through 9
+        // 123
+        // 1 in the 100's column,
+        // 2 in the 10's column,
+        // 3 in the 1's column,
+
+        // Binary number system is base 2 because there's 2 digits -- 0 or 1
+        // [Easiest to read binary right to left]
+        // 1 1 1 0
+        // 0 in the 1's column
+        // 1 in the 2's column
+        // 1 in the 4's column
+        // 1 in the 8's column
+        // 8 + 4 + 2 + 0 = 14 (in decimal)
 
         // Unity has 32 possible layers becuase there are 32 bits in a (4 byte, default) integer
         // Hence, we must bit-shift in order to determine which layer to ignore.
@@ -90,11 +111,19 @@ public class VisibleNode2 : DecisionNode
         //layerMask = ~layerMask;
         // Expressed in one line (assuming agent.layer == Ignore Raycast):
 
-        int layerMask = ~(1 << agent.layer);
-        RaycastHit2D hit = Physics2D.Raycast(from, direction, distance, layerMask);
+        // Initial value: 0 0 0 0 0 0 0 1
+        // Value after shifting left based on layer (2)
+        // 1 << 2 --> 0 0 0 0 0 1 0 0
+        // ~(1 << 2) "negate" -- flips our bits:
+        // 0 0 0 0 0 1 0 0
+        // 1 1 1 1 1 0 1 1
 
-        bool targetHit = hit.collider && hit.collider.CompareTag(target.tag);
-        return targetHit ? yes : no;
+        // The following was moved to IsPlayerVisible function in base class!
+        //int layerMask = ~(1 << agent.layer);
+        //RaycastHit2D hit = Physics2D.Raycast(from, direction, distance, layerMask);
+        //bool targetHit = hit.collider && hit.collider.CompareTag(target.tag);
+
+        return IsPlayerVisible(agent.transform.position) ? yes : no;
     }
 }
 
@@ -122,9 +151,13 @@ public class MoveToTargetAction : ActionNode
 // Move to a position where we have a line-of-sight to the target ("point of visibility")
 public class MoveToVisibleAction : ActionNode
 {
+    public Transform[] waypoints;
+    public float speed;
+
     public override TreeNode Evaluate()
     {
-        Debug.Log("Moving");
+
+
         return base.Evaluate();
     }
 }
