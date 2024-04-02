@@ -6,7 +6,9 @@ public class EnemyBehaviour : MonoBehaviour
 {
     // Player variables
     public GameObject player;
-    [Range(0.0f, 25.0f)] public float viewDistance;
+
+    // Giving the enemy infinite view distance to make things simpler
+    //[Range(0.0f, 25.0f)] public float viewDistance;
 
     // Enemy variables
     float speed = 10.0f;
@@ -15,61 +17,61 @@ public class EnemyBehaviour : MonoBehaviour
     public Transform[] waypoints;
     int nextWaypoint = 0;
 
+    // Testing only
+    //ColorAction redColorAction = new ColorAction();
+    //ColorAction greenColorAction = new ColorAction();
+    //redColorAction.agent = gameObject;
+    //redColorAction.color = Color.red;
+    //greenColorAction.agent = gameObject;
+    //greenColorAction.color = Color.green;
+
     DistanceNode farDistance = new DistanceNode();
-    VisibleNode visible = new VisibleNode();
-    //DistanceNode nearDistance = new DistanceNode();
-    //
-    //ActionNode nullAction = new ActionNode();
-    //ActionNode meleeAction = new MeleeAttackAction();
-    //ActionNode rangedAction = new RangedAttackAction();
-
-    ColorAction redColorAction = new ColorAction();
-    ColorAction greenColorAction = new ColorAction();
-
+    DistanceNode nearDistance = new DistanceNode();
     PatrolAction patrolAction = new PatrolAction();
+
+    VisibleNode visible = new VisibleNode();
     MoveToVisibleAction moveToVisibleAction = new MoveToVisibleAction();
+    MoveToTargetAction moveToTargetAction = new MoveToTargetAction();
+
+    ActionNode nearAttackAction = new NearAttackAction();
+    ActionNode farAttackAction = new FarAttackAction();
 
     void Start()
     {
-        farDistance.agent = gameObject;
-        farDistance.target = player;
+        // 1. Assign data to nodes
+        farDistance.agent = nearDistance.agent = gameObject;
+        farDistance.target = nearDistance.target = player;
         farDistance.distance = 7.5f;
-        
-        redColorAction.agent = gameObject;
-        redColorAction.color = Color.red;
-
-        greenColorAction.agent = gameObject;
-        greenColorAction.color = Color.green;
-
-        farDistance.yes = greenColorAction;
-        farDistance.no = redColorAction;
-
-        moveToVisibleAction.agent = gameObject;
-        moveToVisibleAction.target = player;
-        moveToVisibleAction.speed = speed;
-        moveToVisibleAction.waypoints = waypoints;
-
-        greenColorAction.next = redColorAction.next = patrolAction;
-        patrolAction.agent = gameObject;
-        patrolAction.waypoints = waypoints;
-        patrolAction.speed = speed;
-
-        patrolAction.next = moveToVisibleAction;
+        nearDistance.distance = 2.5f;
 
         visible.agent = gameObject;
         visible.target = player;
 
-        visible.distance = viewDistance;
+        patrolAction.agent = gameObject;
+        patrolAction.waypoints = waypoints;
+        patrolAction.speed = speed;
 
-        visible.yes = greenColorAction;
-        visible.no = redColorAction;
+        moveToVisibleAction.agent = gameObject;
+        moveToVisibleAction.target = player;
+        moveToVisibleAction.waypoints = waypoints;
+        moveToVisibleAction.speed = speed;
+
+        moveToTargetAction.agent = gameObject;
+        moveToTargetAction.target = player;
+        moveToTargetAction.speed = speed;
+
+        // 2. Build decision tree
+        farDistance.no = patrolAction;
+        farDistance.yes = visible;
+        visible.no = moveToVisibleAction;
+        visible.yes = nearDistance;
+        nearDistance.no = moveToTargetAction;
+        nearDistance.yes = nearAttackAction;
     }
 
     void Update()
     {
-        float dt = Time.deltaTime;
-        //TreeNode.Traverse(farDistance);
-        TreeNode.Traverse(visible);
+        TreeNode.Traverse(farDistance);
     }
 
     void OnTriggerEnter2D(Collider2D collision)

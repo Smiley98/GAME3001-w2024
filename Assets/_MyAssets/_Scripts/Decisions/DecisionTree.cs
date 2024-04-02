@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -65,7 +66,8 @@ public class ActionNode : TreeNode
 
 public class VisibleNode : DecisionNode
 {
-    public float distance;
+    // Using infinite distance for simplicity
+    //public float distance;
 
     public override TreeNode Evaluate()
     {
@@ -141,9 +143,11 @@ public class DistanceNode : DecisionNode
 // Move to target object
 public class MoveToTargetAction : ActionNode
 {
+    public float speed;
+
     public override TreeNode Evaluate()
     {
-        Debug.Log("Moving");
+        agent.transform.position = Vector3.MoveTowards(agent.transform.position, target.transform.position, speed * Time.deltaTime);
         return base.Evaluate();
     }
 }
@@ -156,18 +160,29 @@ public class MoveToVisibleAction : ActionNode
 
     public override TreeNode Evaluate()
     {
+        float nearestDistance = float.PositiveInfinity;
+        int nearestIndex = 0;
         for (int i = 0; i < waypoints.Length; i++)
         {
-            Color color = IsPlayerVisible(waypoints[i].transform.position) ? Color.green : Color.red;
-            waypoints[i].GetComponent<SpriteRenderer>().color = color;
+            bool visible = IsPlayerVisible(waypoints[i].transform.position);
+            float distance = Vector2.Distance(agent.transform.position, waypoints[i].transform.position);
+            if (visible && distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
         }
+
+        Vector3 current = agent.transform.position;
+        Vector3 target = waypoints[nearestIndex].transform.position;
+        agent.transform.position = Vector3.MoveTowards(current, target, speed * Time.deltaTime);
 
         return base.Evaluate();
     }
 }
 
 // Close attack
-public class MeleeAttackAction : ActionNode
+public class NearAttackAction : ActionNode
 {
     public override TreeNode Evaluate()
     {
@@ -177,7 +192,7 @@ public class MeleeAttackAction : ActionNode
 }
 
 // Far attack
-public class RangedAttackAction : ActionNode
+public class FarAttackAction : ActionNode
 {
     public override TreeNode Evaluate()
     {
