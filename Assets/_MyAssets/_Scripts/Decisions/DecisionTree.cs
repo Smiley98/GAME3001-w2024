@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 // Base class for all actions & decisions
@@ -205,15 +203,29 @@ public class NearAttackAction : ActionNode
             Vector3 left = Quaternion.Euler(0.0f, 0.0f, 30.0f) * forward;
             Vector3 right = Quaternion.Euler(0.0f, 0.0f, -30.0f) * forward;
 
-            GameObject centre = Object.Instantiate(projectilePrefab);
-            GameObject top = Object.Instantiate(projectilePrefab);
-            GameObject bot = Object.Instantiate(projectilePrefab);
-            centre.transform.position = from + forward;
-            top.transform.position = from + left;
-            bot.transform.position = from + right;
-            centre.GetComponent<Rigidbody2D>().velocity = forward * projectileSpeed;
-            top.GetComponent<Rigidbody2D>().velocity = left * projectileSpeed;
-            bot.GetComponent<Rigidbody2D>().velocity = right * projectileSpeed;
+            GameObject forwardGO = Object.Instantiate(projectilePrefab);
+            GameObject leftGO = Object.Instantiate(projectilePrefab);
+            GameObject rightGO = Object.Instantiate(projectilePrefab);
+
+            forwardGO.GetComponent<Projectile>().Create(Projectile.Type.ENEMY, 25.0f, from, forward, 5.0f);
+            leftGO.GetComponent<Projectile>().Create(Projectile.Type.ENEMY, 25.0f, from, left, 5.0f);
+            rightGO.GetComponent<Projectile>().Create(Projectile.Type.ENEMY, 25.0f, from, right, 5.0f);
+
+            //Vector3 from = agent.transform.position;
+            //Vector3 to = target.transform.position;
+            //Vector3 forward = (to - from).normalized;
+            //Vector3 left = Quaternion.Euler(0.0f, 0.0f, 30.0f) * forward;
+            //Vector3 right = Quaternion.Euler(0.0f, 0.0f, -30.0f) * forward;
+            //
+            //GameObject centre = Object.Instantiate(projectilePrefab);
+            //GameObject top = Object.Instantiate(projectilePrefab);
+            //GameObject bot = Object.Instantiate(projectilePrefab);
+            //centre.transform.position = from + forward;
+            //top.transform.position = from + left;
+            //bot.transform.position = from + right;
+            //centre.GetComponent<Rigidbody2D>().velocity = forward * projectileSpeed;
+            //top.GetComponent<Rigidbody2D>().velocity = left * projectileSpeed;
+            //bot.GetComponent<Rigidbody2D>().velocity = right * projectileSpeed;
         }
         time += dt;
         return base.Evaluate();
@@ -238,7 +250,8 @@ public class ColorAction : ActionNode
 
     public override TreeNode Evaluate()
     {
-        agent.GetComponent<SpriteRenderer>().color = color;
+        bool inRange = Vector3.Distance(agent.transform.position, target.transform.position) <= 8.0f;
+        agent.GetComponent<SpriteRenderer>().color = inRange ? Color.green : Color.red;
         return base.Evaluate();
     }
 }

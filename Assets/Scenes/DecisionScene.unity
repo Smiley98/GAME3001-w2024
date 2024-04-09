@@ -590,7 +590,7 @@ GameObject:
   - component: {fileID: 714988684}
   - component: {fileID: 714988683}
   - component: {fileID: 714988687}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -619,7 +619,7 @@ Rigidbody2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 4
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -738,6 +738,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a491c2ac36a24e4e95b90bf8627e0e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 5134984668207129996, guid: 9b635c3559f9c354fb8af0f94ec76181, type: 3}
+  health: 100
 --- !u!1001 &723517662
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -850,7 +852,7 @@ Rigidbody2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -904,6 +906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 5134984668207129996, guid: 9b635c3559f9c354fb8af0f94ec76181, type: 3}
   player: {fileID: 714988682}
+  health: 100
   waypoints:
   - {fileID: 269349343}
   - {fileID: 150123601}

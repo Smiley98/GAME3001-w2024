@@ -1,17 +1,20 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class EnemyBehaviour : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public GameObject projectilePrefab;
 
     // Player variables
     public GameObject player;
+    public bool playerDead = false;
 
     // Giving the enemy infinite view distance to make things simpler
     //[Range(0.0f, 25.0f)] public float viewDistance;
 
     // Enemy variables
     float speed = 10.0f;
+    public float health = 100.0f;
 
     // Game world variables
     public Transform[] waypoints;
@@ -73,14 +76,19 @@ public class EnemyBehaviour : MonoBehaviour
         nearDistance.no = moveToTargetAction;
         nearDistance.yes = nearAttackAction;
 
-        // Homework: make a ranged combat enemy that follows a similar decision tree to this one
-        // (see Week 12 Lab 7 ranged enemy tree.png for an example).
-        // Ensure the ranged enemy can find cover and wait behind covers.
+        // Lab 8 homework:
+        // Implement a long-ranged enemy who fires a large bullet that deals significant damage.
+        // The enemy will only shoot at the player if its 8+ units away!
+        // (Optional) Add a FindCoverAction by seeking the nearest waypoint from which the player is not visible.
     }
 
     void Update()
     {
-        TreeNode.Traverse(farDistance);
+        // Don't evaluate based on a null object (player gets destroyed once it dies)
+        if (!playerDead)
+            TreeNode.Traverse(farDistance);
+        else
+            TreeNode.Traverse(patrolAction);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
