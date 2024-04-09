@@ -144,7 +144,11 @@ public class MoveToTargetAction : ActionNode
 
     public override TreeNode Evaluate()
     {
-        agent.transform.position = Vector3.MoveTowards(agent.transform.position, target.transform.position, speed * Time.deltaTime);
+        //agent.transform.position = Vector3.MoveTowards(agent.transform.position, target.transform.position, speed * Time.deltaTime);
+        Rigidbody2D rb = agent.GetComponent<Rigidbody2D>();
+        rb.AddForce(Steering.Seek(agent.transform.position, rb.velocity, speed, target.transform.position));
+        //Vector2 desiredVelocity = target.transform.position - agent.transform.position;
+        //rb.AddForce((desiredVelocity - rb.velocity).normalized * speed);
         return base.Evaluate();
     }
 }
@@ -182,6 +186,7 @@ public class MoveToVisibleAction : ActionNode
 public class NearAttackAction : ActionNode
 {
     public GameObject projectilePrefab;
+    public float projectileSpeed;
 
     public float cooldown = 0.5f;
     float time = 0.0f;
@@ -196,19 +201,19 @@ public class NearAttackAction : ActionNode
 
             Vector3 from = agent.transform.position;
             Vector3 to = target.transform.position;
-            Vector3 direction = (to - from).normalized;
-            Vector3 left = Quaternion.Euler(0.0f, 0.0f, 30.0f) * direction;
-            Vector3 right = Quaternion.Euler(0.0f, 0.0f, -30.0f) * direction;
+            Vector3 forward = (to - from).normalized;
+            Vector3 left = Quaternion.Euler(0.0f, 0.0f, 30.0f) * forward;
+            Vector3 right = Quaternion.Euler(0.0f, 0.0f, -30.0f) * forward;
 
             GameObject centre = Object.Instantiate(projectilePrefab);
             GameObject top = Object.Instantiate(projectilePrefab);
             GameObject bot = Object.Instantiate(projectilePrefab);
-            centre.transform.position = from + direction;
+            centre.transform.position = from + forward;
             top.transform.position = from + left;
             bot.transform.position = from + right;
-            centre.GetComponent<Rigidbody2D>().velocity = direction * 2.0f;
-            top.GetComponent<Rigidbody2D>().velocity = left * 2.0f;
-            bot.GetComponent<Rigidbody2D>().velocity = right * 2.0f;
+            centre.GetComponent<Rigidbody2D>().velocity = forward * projectileSpeed;
+            top.GetComponent<Rigidbody2D>().velocity = left * projectileSpeed;
+            bot.GetComponent<Rigidbody2D>().velocity = right * projectileSpeed;
         }
         time += dt;
         return base.Evaluate();

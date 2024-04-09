@@ -63,6 +63,7 @@ public class EnemyBehaviour : MonoBehaviour
         nearAttackAction.agent = gameObject;
         nearAttackAction.target = player;
         nearAttackAction.projectilePrefab = projectilePrefab;
+        nearAttackAction.projectileSpeed = 5.0f;
 
         // 2. Build decision tree
         farDistance.no = patrolAction;
